@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:glamcode/data/model/packages_model/service.dart';
 
-import 'preferred_pack.dart';
-
 class PreferredPackModel extends Equatable {
   final String? status;
   final String? message;

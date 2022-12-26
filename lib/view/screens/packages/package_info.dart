@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:glamcode/data/model/packages_model/service.dart';
+import 'package:glamcode/util/convertHtmlToString.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/custom_divider.dart';
 import 'package:glamcode/view/base/golden_text.dart';
 
 import '../../base/cart_counter.dart';
 
 class PackageInfo extends StatelessWidget {
-  const PackageInfo({Key? key}) : super(key: key);
+  final ServicePackage servicePackage;
+
+  const PackageInfo({Key? key, required this.servicePackage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,7 @@ class PackageInfo extends StatelessWidget {
         child: Column(
           children: [
             Image.network(
-              "https://picsum.photos/250?image=1",
+              servicePackage.serviceImageUrl ?? "",
               width: double.infinity,
               fit: BoxFit.cover,
             ),
@@ -35,7 +40,7 @@ class PackageInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Product",
+                        servicePackage.name ?? "",
                         style: TextStyle(
                             fontSize: Dimensions.fontSizeOverLarge,
                             fontWeight: FontWeight.w400),
@@ -45,7 +50,7 @@ class PackageInfo extends StatelessWidget {
                             Dimensions.PADDING_SIZE_EXTRA_SMALL),
                         child: RichText(
                           text: TextSpan(
-                            text: "₹359   ",
+                            text: "₹${servicePackage.discountedPrice}   ",
                             style: TextStyle(
                                 fontSize: Dimensions.fontSizeDefault,
                                 color: Colors.black),
@@ -54,7 +59,7 @@ class PackageInfo extends StatelessWidget {
                                 child: Transform.translate(
                                   offset: const Offset(0.0, -4.0),
                                   child: Text(
-                                    "₹718",
+                                    "₹${servicePackage.price}",
                                     style: TextStyle(
                                       fontSize: Dimensions.fontSizeSmall,
                                       color: Colors.grey,
@@ -63,14 +68,14 @@ class PackageInfo extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const WidgetSpan(
+                              WidgetSpan(
                                 alignment: PlaceholderAlignment.bottom,
                                 child: Padding(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal:
                                           Dimensions.PADDING_SIZE_DEFAULT),
                                   child: GoldenText(
-                                    text: "  50% Off  ",
+                                    text: "  ${servicePackage.discount}% Off  ",
                                   ),
                                 ),
                               ),
@@ -88,7 +93,7 @@ class PackageInfo extends StatelessWidget {
                               size: Dimensions.fontSizeDefault,
                             ),
                             Text(
-                              "  60 Minutes",
+                              "  ${servicePackage.time} Minutes",
                               style: TextStyle(
                                   fontSize: Dimensions.fontSizeDefault),
                             ),
@@ -101,6 +106,61 @@ class PackageInfo extends StatelessWidget {
                     count: 0,
                   )
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: Dimensions.PADDING_SIZE_DEFAULT,
+                  right: Dimensions.PADDING_SIZE_DEFAULT,
+                  bottom: Dimensions.PADDING_SIZE_DEFAULT),
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      convertHtmlToString(servicePackage.description ?? "")
+                          .map(
+                            (e) => Padding(
+                              padding: const EdgeInsets.all(
+                                  Dimensions.PADDING_SIZE_EXTRA_EXTRA_SMALL),
+                              child: Text("\u2022 $e"),
+                            ),
+                          )
+                          .toList(),
+                ),
+              ),
+            ),
+            const CustomDivider(),
+            Padding(
+              padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(
+                          Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      child: Text(
+                        "Benefits",
+                        style:
+                            TextStyle(fontSize: Dimensions.fontSizeExtraLarge),
+                      ),
+                    ),
+                    Wrap(
+                      children: convertHtmlToString(
+                              servicePackage.longDescription ?? "")
+                          .map(
+                            (e) => Padding(
+                              padding: const EdgeInsets.all(
+                                  Dimensions.PADDING_SIZE_EXTRA_EXTRA_SMALL),
+                              child: Text("\u2022 $e"),
+                            ),
+                          )
+                          .toList(),
+                    )
+                  ],
+                ),
               ),
             )
           ],

@@ -1,6 +1,5 @@
 import 'package:glamcode/data/model/auth.dart';
 import 'package:glamcode/data/model/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api_helper.dart';
 
@@ -23,7 +22,7 @@ class UserRepository {
   Future<bool> verifyOtp(String otp, String phoneNumber) async {
     try {
       User? user = await dioClient.verifyOtp(otp, phoneNumber);
-      if(user != null) {
+      if (user != null) {
         auth.updateCurrentUserInstance(user);
         return true;
       }

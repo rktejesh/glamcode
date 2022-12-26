@@ -102,8 +102,9 @@ class DashboardScreenState extends State<DashboardScreen> {
           ? Scaffold(
               appBar: AppBar(
                 elevation: 0,
-                title: Text(_titles[_pageIndex]),
+                title: Text(_titles[_pageIndex], style: const TextStyle(color: Colors.black),),
                 automaticallyImplyLeading: false,
+                backgroundColor: Colors.white,
               ),
               key: _scaffoldKey,
               bottomNavigationBar: ResponsiveHelper.isDesktop(context)

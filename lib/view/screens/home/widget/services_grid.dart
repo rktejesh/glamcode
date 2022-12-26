@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/main_categories_model.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/screens/packages/packages_screen.dart';
 
 class ServicesGrid extends StatefulWidget {
   const ServicesGrid({Key? key}) : super(key: key);
@@ -48,6 +49,7 @@ class _ServicesGridState extends State<ServicesGrid>
                   return imageGridCard(
                       mainCatModelData[index].mainCategoryImageUrl ?? "",
                       mainCatModelData[index].name ?? "",
+                      mainCatModelData[index].id ?? 0,
                       context);
                 },
               );
@@ -63,12 +65,15 @@ class _ServicesGridState extends State<ServicesGrid>
   }
 }
 
-Widget imageGridCard(String imageUrl, String title, BuildContext context) {
+Widget imageGridCard(
+    String imageUrl, String title, int id, BuildContext context) {
   return InkWell(
     onTap: () {
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/packages', ModalRoute.withName('/'));
-      // Navigator.pushNamed(context, '/packages');
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PackagesScreen(mainCategoryId: id)),
+          ModalRoute.withName('/'));
     },
     child: SizedBox(
       height: 50,

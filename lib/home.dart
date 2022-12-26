@@ -14,7 +14,9 @@ class Home extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is UnauthenticatedState) {
-          return LoginPage(authBloc: authBloc,);
+          return LoginPage(
+            authBloc: authBloc,
+          );
         } else if (state is AuthenticatedState) {
           return const DashboardScreen(pageIndex: 0);
         } else if (state is LoadingAuthenticationState) {

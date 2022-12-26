@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'package:glamcode/data/model/packages_model/service.dart';
+
 class AppConstants {
   static const String APP_NAME = 'Glam Code';
   static const double APP_VERSION = 1.6;
@@ -63,4 +65,61 @@ class AppConstants {
   static const String ZONE_ID = 'zoneId';
   static const String MODULE_ID = 'moduleId';
   static const String LOCALIZATION_KEY = 'X-localization';
+
+  static const Map<String, dynamic> sampleServicePackageData = {
+    "id": 502,
+    "name": "Legs Show Off",
+    "slug": "legs-show-off-noida",
+    "description":
+        "<p>&nbsp; Honey Wax - FA ,UA &amp; FL.</p><p>&nbsp; Threading: Eye Brows &amp; Upper Lips&nbsp;</p>",
+    "mobile_long_description": null,
+    "mobile_long_description2": null,
+    "mobile_long_description3": null,
+    "mobile_long_description4": null,
+    "long_description": null,
+    "price": 858,
+    "time": 60,
+    "sort": null,
+    "time_type": "minutes",
+    "discount": 50,
+    "discount_type": "percent",
+    "main_category_id": 33,
+    "category_id": 244,
+    "sub_category_id": null,
+    "packages_id": 0,
+    "location_id": 6,
+    "image": ["da5d0189bcddf2c6dae17132c5a9cfd5.jpeg.webp"],
+    "default_image": "da5d0189bcddf2c6dae17132c5a9cfd5.jpeg.webp",
+    "status": "active",
+    "prefered_service": "Yes",
+    "location_city": "Noida",
+    "seo_title": null,
+    "seo_desc": null,
+    "seo_key": null,
+    "created_at": "2021-12-15 03:49:54",
+    "updated_at": "2022-12-11 03:54:05",
+    "rating_per": "4.75",
+    "rating_pop": 12000,
+    "service_image_url":
+        "https://www.glamcode.in/user-uploads/service/502/da5d0189bcddf2c6dae17132c5a9cfd5.jpeg.webp",
+    "service_detail_url":
+        "https://www.glamcode.in/499-store/legs-show-off-noida",
+    "discounted_price": 429,
+    "category": {
+      "id": 244,
+      "main_category_id": "33",
+      "name": "499 Store",
+      "slug": "499-store",
+      "image": "3840a99398a49a9ff7edeaa00976da60.png.webp",
+      "status": "active",
+      "sort_order": null,
+      "created_at": "2021-12-14 21:52:46",
+      "updated_at": "2022-11-19 03:24:11",
+      "rating_per": "4.75",
+      "rating_pop": 12000,
+      "category_image_url":
+          "https://www.glamcode.in/user-uploads/subcategory/3840a99398a49a9ff7edeaa00976da60.png.webp"
+    }
+  };
+  static ServicePackage sampleServicePackage = ServicePackage.fromMap(sampleServicePackageData);
 }

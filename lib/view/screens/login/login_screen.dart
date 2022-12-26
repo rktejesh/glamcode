@@ -47,8 +47,16 @@ class _LoginPageState extends State<LoginPage> {
                                 Dimensions.PADDING_SIZE_DEFAULT),
                             child: TextFormField(
                               decoration: const InputDecoration(
+                                  focusColor: Colors.black,
+                                  floatingLabelStyle: TextStyle(color: Colors.black),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black)),
                                   labelText: "Phone Number",
-                                  border: OutlineInputBorder()),
+                                  border: OutlineInputBorder(),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black))),
                               validator: CustomValidator().validateMobile,
                               keyboardType: TextInputType.phone,
                               autovalidateMode:

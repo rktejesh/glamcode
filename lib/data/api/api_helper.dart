@@ -4,21 +4,29 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:glamcode/data/model/address_details_model.dart';
 import 'package:glamcode/data/model/about.dart';
 import 'package:glamcode/data/model/auth.dart';
+import 'package:glamcode/data/model/bookings.dart';
+import 'package:glamcode/data/model/coupons.dart';
 import 'package:glamcode/data/model/gallery.dart';
 import 'package:glamcode/data/model/home_page.dart';
 import 'package:glamcode/data/model/location_model.dart';
 import 'package:glamcode/data/model/main_categories_model.dart';
+import 'package:glamcode/data/model/my_cart/my_cart.dart';
+import 'package:glamcode/data/model/packages_model/packages_model.dart';
 import 'package:glamcode/data/model/privacy.dart';
 import 'package:glamcode/data/model/terms.dart';
 import 'package:glamcode/data/model/user.dart';
 import 'package:glamcode/util/app_constants.dart';
 
+import '../model/packages_model/preferred_pack_model.dart';
+
 class DioClient {
   final Dio _dio = Dio();
   final _baseUrl = 'https://glamcode.in/api';
   final CookieJar cookieJar = CookieJar();
+  final Auth auth = Auth.instance;
 
   static final instance = DioClient();
 
@@ -27,22 +35,8 @@ class DioClient {
       ..add(TokenInterceptor())
       ..add(DioCacheInterceptor(options: options))
       ..add(CookieManager(cookieJar));
-    print(cookieJar.loadForRequest(Uri.parse("https://glamcode.in/")));
+    cookieJar.loadForRequest(Uri.parse("https://glamcode.in/"));
   }
-
-/*  Future<Itemmodel?> getItem() async {
-    Itemmodel? itemDetails;
-    try {
-      Response itemDetailsData =
-      await _dio.get('$_baseUrl/astro/getProfile');
-      itemDetails = Itemmodel.fromJson(itemDetailsData.data["data"]);
-    } on DioError catch (e) {
-      if (e.response != null) {
-      } else {
-      }
-    }
-    return itemDetails;
-  }*/
 
   Future<HomePageModel?> getHomePage() async {
     HomePageModel? homePage;
@@ -119,8 +113,8 @@ class DioClient {
   Future<MainCategoriesModel?> getMainCategories() async {
     MainCategoriesModel? mainCategoriesModel;
     try {
-      Response mainCategoriesModelData =
-          await _dio.get('$_baseUrl/main-categories/${Auth.instance.prefs.getInt("selectedLocationId")}');
+      Response mainCategoriesModelData = await _dio.get(
+          '$_baseUrl/main-categories/${Auth.instance.prefs.getInt("selectedLocationId")}');
       mainCategoriesModel =
           MainCategoriesModel.fromJson(mainCategoriesModelData.data);
     } on DioError catch (e) {
@@ -130,10 +124,101 @@ class DioClient {
     return mainCategoriesModel;
   }
 
+  Future<Coupons?> getCoupons() async {
+    Coupons? couponsModel;
+    try {
+      Response couponsModelData = await _dio.get(AppConstants.getCouponsList);
+      couponsModel = Coupons.fromJson(couponsModelData.data);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+    }
+    return couponsModel;
+  }
+
+  Future<AddressDetailsModel?> getAddress() async {
+    AddressDetailsModel? addressDetailsModel;
+    try {
+      User currentUser = await auth.currentUser;
+      Response addressDetailsModelData = await _dio.get("${AppConstants.getAddressDetails}/${currentUser.id}");
+      addressDetailsModel = AddressDetailsModel.fromJson(addressDetailsModelData.data);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+    }
+    return addressDetailsModel;
+  }
+
+  Future<PreferredPackModel?> getPreferredPack() async {
+    PreferredPackModel? preferredPackModel;
+    try {
+      Response preferredPackModelData = await _dio.get(
+          '$_baseUrl/preferred-pack/${Auth.instance.prefs.getInt("selectedLocationId")}');
+      preferredPackModel =
+          PreferredPackModel.fromMap(preferredPackModelData.data);
+    } on DioError catch (e) {
+      print(
+          "========================================+++++++++++++++++++++++++> $e");
+      if (e.response != null) {
+      } else {}
+    } catch (e) {
+      print(
+          "========================================+++++++++++++++++++++++++> $e");
+    }
+    return preferredPackModel;
+  }
+
+  Future<PackagesModel?> getAllPackages(int id) async {
+    PackagesModel? packagesModel;
+    try {
+      Response packagesModelData = await _dio.get(
+          '$_baseUrl/categorys/$id/${Auth.instance.prefs.getInt("selectedLocationId")}');
+      // print("====================================================> ${PreferredPackModel.fromMap(preferredPackModelData.data)}");
+      packagesModel = PackagesModel.fromMap(packagesModelData.data);
+    } on DioError catch (e) {
+      print(
+          "========================================+++++++++++++++++++++++++> $e");
+      return null;
+    } catch (e) {
+      print(
+          "========================================+++++++++++++++++++++++++> ${e.toString()}");
+      return null;
+    }
+    return packagesModel;
+  }
+
+  Future<BookingsModel?> getBookings() async {
+    BookingsModel? bookingsModel;
+    try {
+      User currentUser = await auth.currentUser;
+      Response bookingsModelData =
+          await _dio.get('$_baseUrl/bookings/${currentUser.id}');
+      bookingsModel = BookingsModel.fromJson(bookingsModelData.data);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+    }
+    return bookingsModel;
+  }
+
+  Future<MyCart?> getCart() async {
+    MyCart? myCartModel;
+    try {
+      User currentUser = await auth.currentUser;
+      Response myCartModelData =
+          await _dio.get('$_baseUrl/mycart/${currentUser.id}');
+      myCartModel = MyCart.fromMap(myCartModelData.data);
+    } on DioError catch (e) {
+      print("==========================================> ${e.response}");
+    } catch (e) {
+      print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-==-=--==-=-=> ${e.toString()}");
+    }
+    return myCartModel;
+  }
+
   Future<bool?> sendOtp(String phoneNumber) async {
     Map<String, dynamic> data = {"mobile": phoneNumber, "calling_code": "+91"};
     String jsonData = json.encode(data);
-    print(data);
     try {
       Response response = await _dio.post(
         AppConstants.apiLogin,
@@ -142,33 +227,30 @@ class DioClient {
       print(response);
     } on DioError catch (e) {
       if (e.response != null) {
-      } else {
-
-      }
+      } else {}
       return false;
     }
     return true;
   }
 
   Future<User?> verifyOtp(String otp, String phoneNumber) async {
-    Map<String, dynamic> data = {"calling_code": "+91", "mobile": phoneNumber, "otp": otp};
+    Map<String, dynamic> data = {
+      "calling_code": "+91",
+      "mobile": phoneNumber,
+      "otp": otp
+    };
     String jsonData = json.encode(data);
-    print(data);
     try {
       Response response = await _dio.post(
         AppConstants.apiOtpVerify,
         data: data,
       );
-      print(response);
       return User.fromJson(jsonEncode(response.data["user"]));
     } on DioError catch (e) {
       if (e.response != null) {
-      } else {
-
-      }
+      } else {}
       return null;
     }
-    return null;
   }
 
   Dio get dio => _dio;

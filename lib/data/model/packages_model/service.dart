@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:glamcode/data/model/packages_model/category.dart';
 
-import 'category.dart';
 
-class Service extends Equatable {
+class ServicePackage extends Equatable {
   final int? id;
   final String? name;
   final String? slug;
@@ -14,18 +14,18 @@ class Service extends Equatable {
   final dynamic mobileLongDescription3;
   final dynamic mobileLongDescription4;
   final String? longDescription;
-  final int? price;
+  final num? price;
   final int? time;
   final int? sort;
   final String? timeType;
-  final int? discount;
+  final num? discount;
   final String? discountType;
   final int? mainCategoryId;
   final int? categoryId;
   final dynamic subCategoryId;
   final int? packagesId;
   final int? locationId;
-  final List<String>? image;
+  final List<dynamic>? image;
   final String? defaultImage;
   final String? status;
   final String? preferedService;
@@ -39,10 +39,10 @@ class Service extends Equatable {
   final int? ratingPop;
   final String? serviceImageUrl;
   final String? serviceDetailUrl;
-  final int? discountedPrice;
-  final PackagesCategory? category;
+  final num? discountedPrice;
+  final Category? category;
 
-  const Service({
+  const ServicePackage({
     this.id,
     this.name,
     this.slug,
@@ -81,7 +81,7 @@ class Service extends Equatable {
     this.category,
   });
 
-  factory Service.fromMap(Map<String, dynamic> data) => Service(
+  factory ServicePackage.fromMap(Map<String, dynamic> data) => ServicePackage(
         id: data['id'] as int?,
         name: data['name'] as String?,
         slug: data['slug'] as String?,
@@ -91,18 +91,18 @@ class Service extends Equatable {
         mobileLongDescription3: data['mobile_long_description3'] as dynamic,
         mobileLongDescription4: data['mobile_long_description4'] as dynamic,
         longDescription: data['long_description'] as String?,
-        price: data['price'] as int?,
+        price: data['price'] as num?,
         time: data['time'] as int?,
         sort: data['sort'] as int?,
         timeType: data['time_type'] as String?,
-        discount: data['discount'] as int?,
+        discount: data['discount'] as num?,
         discountType: data['discount_type'] as String?,
         mainCategoryId: data['main_category_id'] as int?,
         categoryId: data['category_id'] as int?,
         subCategoryId: data['sub_category_id'] as dynamic,
         packagesId: data['packages_id'] as int?,
         locationId: data['location_id'] as int?,
-        image: data['image'] as List<String>?,
+        image: data['image'] as List<dynamic>?,
         defaultImage: data['default_image'] as String?,
         status: data['status'] as String?,
         preferedService: data['prefered_service'] as String?,
@@ -116,10 +116,10 @@ class Service extends Equatable {
         ratingPop: data['rating_pop'] as int?,
         serviceImageUrl: data['service_image_url'] as String?,
         serviceDetailUrl: data['service_detail_url'] as String?,
-        discountedPrice: data['discounted_price'] as int?,
+        discountedPrice: data['discounted_price'] as num?,
         category: data['category'] == null
             ? null
-            : PackagesCategory.fromMap(
+            : Category.fromMap(
                 data['category'] as Map<String, dynamic>),
       );
 
@@ -164,17 +164,17 @@ class Service extends Equatable {
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [Service].
-  factory Service.fromJson(String data) {
-    return Service.fromMap(json.decode(data) as Map<String, dynamic>);
+  /// Parses the string and returns the resulting Json object as [ServicePackage].
+  factory ServicePackage.fromJson(String data) {
+    return ServicePackage.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [Service] to a JSON string.
+  /// Converts [ServicePackage] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  Service copyWith({
+  ServicePackage copyWith({
     int? id,
     String? name,
     String? slug,
@@ -184,18 +184,18 @@ class Service extends Equatable {
     dynamic mobileLongDescription3,
     dynamic mobileLongDescription4,
     String? longDescription,
-    int? price,
+    num? price,
     int? time,
     int? sort,
     String? timeType,
-    int? discount,
+    num? discount,
     String? discountType,
     int? mainCategoryId,
     int? categoryId,
     dynamic subCategoryId,
     int? packagesId,
     int? locationId,
-    List<String>? image,
+    List<dynamic>? image,
     String? defaultImage,
     String? status,
     String? preferedService,
@@ -209,10 +209,10 @@ class Service extends Equatable {
     int? ratingPop,
     String? serviceImageUrl,
     String? serviceDetailUrl,
-    int? discountedPrice,
-    PackagesCategory? category,
+    num? discountedPrice,
+    Category? category,
   }) {
-    return Service(
+    return ServicePackage(
       id: id ?? this.id,
       name: name ?? this.name,
       slug: slug ?? this.slug,

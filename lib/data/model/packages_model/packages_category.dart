@@ -16,6 +16,7 @@ class PackagesCategory extends Equatable {
   final String? updatedAt;
   final String? ratingPer;
   final int? ratingPop;
+  final List<ServicePackage>? service;
   final String? categoryImageUrl;
 
   const PackagesCategory({
@@ -30,6 +31,7 @@ class PackagesCategory extends Equatable {
     this.updatedAt,
     this.ratingPer,
     this.ratingPop,
+    this.service,
     this.categoryImageUrl,
   });
 
@@ -46,6 +48,9 @@ class PackagesCategory extends Equatable {
         updatedAt: data['updated_at'] as String?,
         ratingPer: data['rating_per'] as String?,
         ratingPop: data['rating_pop'] as int?,
+        service: (data['service'] as List<dynamic>?)
+            ?.map((e) => ServicePackage.fromMap(e as Map<String, dynamic>))
+            .toList(),
         categoryImageUrl: data['category_image_url'] as String?,
       );
 
@@ -61,6 +66,7 @@ class PackagesCategory extends Equatable {
         'updated_at': updatedAt,
         'rating_per': ratingPer,
         'rating_pop': ratingPop,
+        'service': service?.map((e) => e.toMap()).toList(),
         'category_image_url': categoryImageUrl,
       };
 
@@ -88,6 +94,7 @@ class PackagesCategory extends Equatable {
     String? updatedAt,
     String? ratingPer,
     int? ratingPop,
+    List<ServicePackage>? service,
     String? categoryImageUrl,
   }) {
     return PackagesCategory(
@@ -102,6 +109,7 @@ class PackagesCategory extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       ratingPer: ratingPer ?? this.ratingPer,
       ratingPop: ratingPop ?? this.ratingPop,
+      service: service ?? this.service,
       categoryImageUrl: categoryImageUrl ?? this.categoryImageUrl,
     );
   }
@@ -120,6 +128,7 @@ class PackagesCategory extends Equatable {
       updatedAt,
       ratingPer,
       ratingPop,
+      service,
       categoryImageUrl,
     ];
   }

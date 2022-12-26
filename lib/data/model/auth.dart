@@ -12,7 +12,7 @@ class Auth {
 
   Future<User> init() async {
     prefs = await SharedPreferences.getInstance();
-    if(prefs.containsKey("user")){
+    if (prefs.containsKey("user")) {
       return User.fromJson(prefs.getString('user') ?? "");
     } else {
       return User.empty;
@@ -20,6 +20,7 @@ class Auth {
   }
 
   late SharedPreferences prefs;
+
   /// the one and only instance of this singleton
   static final instance = Auth._();
   //ChatBloc chatBloc = ChatBloc(DatabaseApi.db);

@@ -74,8 +74,10 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         return InkWell(
                           onTap: () {
-                            Auth.instance.prefs.setString("selectedLocation",
-                                locationData[index].city?.toLowerCase() ?? "lucknow");
+                            Auth.instance.prefs.setString(
+                                "selectedLocation",
+                                locationData[index].city?.toLowerCase() ??
+                                    "lucknow");
                             Auth.instance.prefs.setInt("selectedLocationId",
                                 locationData[index].id ?? 2);
                             Navigator.of(context).popAndPushNamed("/dashboard");

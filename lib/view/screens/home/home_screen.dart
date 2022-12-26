@@ -24,63 +24,64 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _future = DioClient().getHomePage();
+    _future = DioClient.instance.getHomePage();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return FutureBuilder<HomePageModel?>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            HomePageModel homePageModel = HomePageModel();
-            if (snapshot.hasData) {
-              homePageModel = snapshot.data!;
-            }
-            return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: <Widget>[
-                locationAppBar(context),
-                searchBar(),
-                SliverPadding(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          HomePageModel homePageModel = HomePageModel();
+          if (snapshot.hasData) {
+            homePageModel = snapshot.data!;
+          }
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: <Widget>[
+              locationAppBar(context),
+              searchBar(),
+              SliverToBoxAdapter(
+                child: Padding(
                   padding:
                       const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate(
-                      [
-                        ImageSlider(
-                          images: homePageModel.sliderImages ?? [],
-                        ),
-                        const ServicesGrid(),
-                        VideoEmbed(
-                          url: homePageModel.videos?.homePageVideoUrl ??
-                              "https://www.youtube.com/watch?v=i-X4wtDprY8",
-                        ),
-                        const Packages(),
-                        CustomerTestimonials(
-                          reviews: homePageModel.reviews ?? [],
-                        )
-                      ],
-                    ),
+                  child: Wrap(
+                    children: [
+                      ImageSlider(
+                        images: homePageModel.sliderImages ?? [],
+                      ),
+                      const ServicesGrid(),
+                      VideoEmbed(
+                        url: homePageModel.videos?.homePageVideoUrl ??
+                            "https://www.youtube.com/watch?v=i-X4wtDprY8",
+                      ),
+                      const Packages(),
+                      CustomerTestimonials(
+                        reviews: homePageModel.reviews ?? [],
+                      )
+                    ],
                   ),
                 ),
-              ],
-            );
-          } else {
-            ///TODO: write error page
-            return Container();
-          }
-        });
+              ),
+            ],
+          );
+        } else {
+          ///TODO: write error page
+          return Container();
+        }
+      },
+    );
   }
 }
 
 Widget locationAppBar(BuildContext context) {
   return SliverAppBar(
+    backgroundColor: Colors.white,
     elevation: 0,
     iconTheme:
         IconThemeData(color: Colors.grey, size: Dimensions.fontSizeOverLarge),
@@ -89,7 +90,7 @@ Widget locationAppBar(BuildContext context) {
     floating: true,
     title: Text(
       "Vineet Khand",
-      style: TextStyle(fontSize: Dimensions.fontSizeDefault),
+      style: TextStyle(fontSize: Dimensions.fontSizeDefault, color: Colors.black),
       overflow: TextOverflow.ellipsis,
     ),
     titleSpacing: 0,
@@ -98,11 +99,16 @@ Widget locationAppBar(BuildContext context) {
           Navigator.of(context).pushNamed('/location');
         },
         child: const Icon(Icons.location_on_rounded)),
-    actions: const [
-      Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
-        child: Icon(Icons.shopping_cart_rounded),
+    actions: [
+      InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed('/cart');
+        },
+        child: const Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
+          child: Icon(Icons.shopping_cart_rounded),
+        ),
       )
     ],
   );
@@ -110,6 +116,7 @@ Widget locationAppBar(BuildContext context) {
 
 Widget searchBar() {
   return SliverAppBar(
+    backgroundColor: Colors.white,
     toolbarHeight: Dimensions.PADDING_SIZE_DEFAULT + kToolbarHeight,
     pinned: true,
     flexibleSpace: FlexibleSpaceBar(

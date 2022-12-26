@@ -41,7 +41,6 @@ class _CartCounterState extends State<CartCounter> {
                 setState(() {
                   if (count > 0) {
                     count--;
-                    print(count);
                   }
                 });
               },
@@ -69,7 +68,6 @@ class _CartCounterState extends State<CartCounter> {
               onTap: () {
                 setState(() {
                   count++;
-                  print(count);
                 });
               },
               child: Padding(

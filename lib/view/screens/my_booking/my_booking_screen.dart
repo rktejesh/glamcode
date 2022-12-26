@@ -1,10 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:glamcode/data/api/api_helper.dart';
+import 'package:glamcode/data/model/bookings.dart';
+import 'package:glamcode/view/screens/my_booking/widget/booking_tile.dart';
 
-class MyBookingScreen extends StatelessWidget {
+import '../../base/loading_screen.dart';
+
+class MyBookingScreen extends StatefulWidget {
   const MyBookingScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container();
+  State<MyBookingScreen> createState() => _MyBookingScreenState();
+}
+
+class _MyBookingScreenState extends State<MyBookingScreen>
+    with AutomaticKeepAliveClientMixin {
+  late Future<BookingsModel?> _future;
+
+  @override
+  void initState() {
+    _future = DioClient.instance.getBookings();
+    super.initState();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return FutureBuilder<BookingsModel?>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const LoadingScreen();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          BookingsModel bookingsModelData = BookingsModel();
+          if (snapshot.hasData) {
+            bookingsModelData = snapshot.data!;
+          }
+          List<OngoingBookingsArr> ongoingBookingsArrList =
+              bookingsModelData.ongoingBookingsArr ?? [];
+          return ListView.builder(
+              itemCount: ongoingBookingsArrList.length,
+              itemBuilder: (context, index) {
+                return BookingTile(
+                  ongoingBookingsArr: ongoingBookingsArrList[index],
+                );
+              });
+        } else {
+          ///TODO: write error page
+          return Container();
+        }
+      },
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

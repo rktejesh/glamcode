@@ -9,7 +9,7 @@ abstract class AuthenticationService {
 class FakeAuthenticationService extends AuthenticationService {
   @override
   Future<User?> getCurrentUser() async {
-    return User(id: 0); // return null for now
+    return const User(id: 0); // return null for now
   }
 
   @override

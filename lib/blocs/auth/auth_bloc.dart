@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:glamcode/data/api/api_helper.dart';
-import 'package:glamcode/data/model/auth.dart';
 import 'package:glamcode/data/model/user.dart';
 import 'package:glamcode/data/repository/user_repository.dart';
 
@@ -11,7 +10,8 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   UserRepository userRepository;
   DioClient dioClient;
-  AuthBloc({required this.userRepository, required this.dioClient}) : super(AuthInitial()) {
+  AuthBloc({required this.userRepository, required this.dioClient})
+      : super(AuthInitial()) {
     on<AppLoaded>((event, emit) async {
       try {
         emit(LoadingAuthenticationState());

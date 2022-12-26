@@ -7,11 +7,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:glamcode/app.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/auth.dart';
 import 'package:glamcode/data/repository/user_repository.dart';
 
-import 'package:glamcode/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
