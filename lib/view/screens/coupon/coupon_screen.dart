@@ -33,7 +33,7 @@ class _CouponScreenState extends State<CouponScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const LoadingScreen();
             } else if (snapshot.connectionState == ConnectionState.done) {
-              Coupons couponData = Coupons();
+              Coupons couponData = const Coupons();
               if (snapshot.hasData) {
                 couponData = snapshot.data!;
               }
@@ -63,9 +63,13 @@ Widget couponsTile(CouponData couponData) {
           physics: const NeverScrollableScrollPhysics(),
           children: [
             couponsTileText("Coupon  ", couponData.title.toString()),
-
-            couponsTileText("Discount  ", couponData.percent == null ? "Rs ${couponData.amount}" : "${couponData.percent}%" " off"),
-            couponsTileText("Minimum Purchase Amount  ", "Rs ${couponData.minimumPurchaseAmount}"),
+            couponsTileText(
+                "Discount  ",
+                couponData.percent == null
+                    ? "Rs ${couponData.amount}"
+                    : "${couponData.percent}%" " off"),
+            couponsTileText("Minimum Purchase Amount  ",
+                "Rs ${couponData.minimumPurchaseAmount}"),
           ],
         ),
         Padding(

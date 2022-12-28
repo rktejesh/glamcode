@@ -121,5 +121,6 @@ class AppConstants {
           "https://www.glamcode.in/user-uploads/subcategory/3840a99398a49a9ff7edeaa00976da60.png.webp"
     }
   };
-  static ServicePackage sampleServicePackage = ServicePackage.fromMap(sampleServicePackageData);
+  static ServicePackage sampleServicePackage =
+      ServicePackage.fromMap(sampleServicePackageData);
 }

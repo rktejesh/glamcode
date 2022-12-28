@@ -28,9 +28,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
         title: const Text("Privacy Policy"),
         automaticallyImplyLeading: true,
         backgroundColor: Colors.black,
-        titleTextStyle: const TextStyle(
-            color: Colors.white
-        ),
+        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: FutureBuilder<Privacy?>(
         future: _future,
@@ -46,7 +44,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding:
-                  const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
                   child: HtmlWidget(privacy.pageData.toString()),
                 ),
               ),

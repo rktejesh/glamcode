@@ -3,11 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glamcode/blocs/cart/cart_bloc.dart';
+import 'package:glamcode/blocs/cart_data/cart_data_bloc.dart';
+import 'package:glamcode/data/repository/cart_data_repository.dart';
+import 'package:glamcode/data/repository/shopping_repository.dart';
 import 'package:glamcode/theme/light_theme.dart';
 import 'package:glamcode/util/app_constants.dart';
 import 'package:glamcode/view/screens/about/about.dart';
 import 'package:glamcode/view/screens/address/address_screen.dart';
-import 'package:glamcode/view/screens/address/new_address.dart';
 import 'package:glamcode/view/screens/dashboard/dashboard_screen.dart';
 import 'package:glamcode/view/screens/location/location_screen.dart';
 import 'package:glamcode/view/screens/cart/cart_screen.dart';
@@ -23,13 +25,17 @@ import 'home.dart';
 
 class MyApp extends StatefulWidget {
   final UserRepository userRepository;
+  final ShoppingRepository shoppingRepository;
+  final CartDataRepository cartDataRepository;
   final Auth auth;
   final DioClient dioClient;
   const MyApp(
       {super.key,
       required this.userRepository,
       required this.auth,
-      required this.dioClient});
+      required this.dioClient,
+      required this.shoppingRepository,
+      required this.cartDataRepository});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -38,14 +44,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late AuthBloc authBloc;
   late CartBloc cartBloc;
+  late CartDataBloc cartDataBloc;
   UserRepository get userRepository => widget.userRepository;
+  ShoppingRepository get shoppingRepository => widget.shoppingRepository;
+  CartDataRepository get cartDataRepository => widget.cartDataRepository;
   Auth get auth => widget.auth;
   DioClient get dioClient => widget.dioClient;
   @override
   void initState() {
     authBloc = AuthBloc(userRepository: userRepository, dioClient: dioClient);
     authBloc.add(AppLoaded());
-    cartBloc = CartBloc();
+    cartDataBloc = CartDataBloc(cartDataRepository);
+    cartDataBloc.add(CartDataStarted());
+    cartBloc = CartBloc(shoppingRepository, cartDataBloc);
     cartBloc.add(CartStarted());
     super.initState();
   }
@@ -59,6 +70,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => cartBloc,
+        ),
+        BlocProvider(
+          create: (context) => cartDataBloc,
         ),
       ],
       child: MaterialApp(
@@ -87,7 +101,6 @@ class _MyAppState extends State<MyApp> {
           "/about": (context) => const AboutScreen(),
           "/privacy": (context) => const PrivacyPolicyScreen(),
           "/address": (context) => const AddressDetailsScreen(),
-          "/new-address": (context) => const NewAddressScreen()
         },
       ),
     );

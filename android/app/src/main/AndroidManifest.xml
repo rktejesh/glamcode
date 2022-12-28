@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gonzo.glamcode.glamcode">
+    package="com.glamcode.app">
    <application
         android:label="glamcode"
         android:name="${applicationName}"

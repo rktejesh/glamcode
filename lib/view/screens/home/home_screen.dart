@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/home_page.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/util/get_current_location.dart';
+import 'package:glamcode/view/base/loading_screen.dart';
 import 'package:glamcode/view/screens/home/widget/customer_testimonials.dart';
 import 'package:glamcode/view/screens/home/widget/packages.dart';
 import 'package:glamcode/view/screens/home/widget/services_grid.dart';
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen>
       future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const LoadingScreen();
         } else if (snapshot.connectionState == ConnectionState.done) {
           HomePageModel homePageModel = HomePageModel();
           if (snapshot.hasData) {
@@ -88,11 +90,20 @@ Widget locationAppBar(BuildContext context) {
     toolbarHeight: Dimensions.fontSizeOverLarge * 1.5,
     pinned: true,
     floating: true,
-    title: Text(
-      "Vineet Khand",
-      style: TextStyle(fontSize: Dimensions.fontSizeDefault, color: Colors.black),
-      overflow: TextOverflow.ellipsis,
-    ),
+    title: FutureBuilder<String>(
+        future: getCurrentLocation(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Text(
+              snapshot.data ?? "",
+              style: TextStyle(
+                  fontSize: Dimensions.fontSizeDefault, color: Colors.black),
+              overflow: TextOverflow.ellipsis,
+            );
+          } else {
+            return const Text("");
+          }
+        }),
     titleSpacing: 0,
     leading: InkWell(
         onTap: () {

@@ -32,5 +32,5 @@ class ProductsArray extends Equatable {
   String toJson() => json.encode(toMap());
 
   @override
-  List<Object?> get props => [189, 198];
+  List<Object?> get props => [myCartProduct];
 }

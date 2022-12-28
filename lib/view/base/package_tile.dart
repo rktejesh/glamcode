@@ -143,8 +143,8 @@ class PackageTile extends StatelessWidget {
                                 servicePackage.serviceImageUrl ?? ""),
                           ),
                         ),
-                        const CartCounter(
-                          count: 0,
+                        CartCounter(
+                          servicePackage: servicePackage,
                         )
                       ],
                     ),

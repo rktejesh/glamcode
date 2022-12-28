@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SimpleBlocObserver extends BlocObserver {
-/*  @override
+  @override
   void onEvent(Bloc bloc, Object? event) {
     super.onEvent(bloc, event);
     print(event);
@@ -29,5 +29,5 @@ class SimpleBlocObserver extends BlocObserver {
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     print(error);
     super.onError(bloc, error, stackTrace);
-  }*/
+  }
 }

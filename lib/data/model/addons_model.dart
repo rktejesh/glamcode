@@ -1,15 +1,19 @@
 import 'dart:convert';
+
 /// status : "success"
 /// message : "Data Found"
 /// addonData : [{"name":"I don't require any add-ons","price":"0"},{"name":"Chin & Jawline wax","price":"99"},{"name":"Sidelocks wax","price":"99"},{"name":"Hair Color Application- Root Touchup","price":"199"},{"name":"Face & Neck Detan Pack","price":"199"}]
 
-AddonsModel addonsModelFromJson(String str) => AddonsModel.fromJson(json.decode(str));
+AddonsModel addonsModelFromJson(String str) =>
+    AddonsModel.fromJson(json.decode(str));
 String addonsModelToJson(AddonsModel data) => json.encode(data.toJson());
+
 class AddonsModel {
   AddonsModel({
-      this.status, 
-      this.message, 
-      this.addonData,});
+    this.status,
+    this.message,
+    this.addonData,
+  });
 
   AddonsModel.fromJson(dynamic json) {
     status = json['status'];
@@ -24,13 +28,16 @@ class AddonsModel {
   String? status;
   String? message;
   List<AddonData>? addonData;
-AddonsModel copyWith({  String? status,
-  String? message,
-  List<AddonData>? addonData,
-}) => AddonsModel(  status: status ?? this.status,
-  message: message ?? this.message,
-  addonData: addonData ?? this.addonData,
-);
+  AddonsModel copyWith({
+    String? status,
+    String? message,
+    List<AddonData>? addonData,
+  }) =>
+      AddonsModel(
+        status: status ?? this.status,
+        message: message ?? this.message,
+        addonData: addonData ?? this.addonData,
+      );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['status'] = status;
@@ -40,7 +47,6 @@ AddonsModel copyWith({  String? status,
     }
     return map;
   }
-
 }
 
 /// name : "I don't require any add-ons"
@@ -48,10 +54,12 @@ AddonsModel copyWith({  String? status,
 
 AddonData addonDataFromJson(String str) => AddonData.fromJson(json.decode(str));
 String addonDataToJson(AddonData data) => json.encode(data.toJson());
+
 class AddonData {
   AddonData({
-      this.name, 
-      this.price,});
+    this.name,
+    this.price,
+  });
 
   AddonData.fromJson(dynamic json) {
     name = json['name'];
@@ -59,16 +67,18 @@ class AddonData {
   }
   String? name;
   String? price;
-AddonData copyWith({  String? name,
-  String? price,
-}) => AddonData(  name: name ?? this.name,
-  price: price ?? this.price,
-);
+  AddonData copyWith({
+    String? name,
+    String? price,
+  }) =>
+      AddonData(
+        name: name ?? this.name,
+        price: price ?? this.price,
+      );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['name'] = name;
     map['price'] = price;
     return map;
   }
-
 }

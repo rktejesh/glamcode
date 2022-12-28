@@ -102,8 +102,8 @@ class PackageInfo extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const CartCounter(
-                    count: 0,
+                  CartCounter(
+                    servicePackage: servicePackage,
                   )
                 ],
               ),

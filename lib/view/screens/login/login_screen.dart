@@ -48,7 +48,8 @@ class _LoginPageState extends State<LoginPage> {
                             child: TextFormField(
                               decoration: const InputDecoration(
                                   focusColor: Colors.black,
-                                  floatingLabelStyle: TextStyle(color: Colors.black),
+                                  floatingLabelStyle:
+                                      TextStyle(color: Colors.black),
                                   focusedBorder: OutlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.black)),

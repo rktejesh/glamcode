@@ -24,26 +24,26 @@ class MyCartProduct extends Equatable {
   });
 
   factory MyCartProduct.fromMap(Map<String, dynamic> data) => MyCartProduct(
-    serviceId: data['serviceID'] as String?,
-    servicePrice: data['servicePrice'] as String?,
-    serviceName: data['serviceName'] as String?,
-    serviceDiscount: data['serviceDiscount'] as dynamic,
-    serviceOriginalPrice: data['serviceOriginalPrice'] as dynamic,
-    type: data['type'] as String?,
-    serviceImage: data['serviceImage'] as String?,
-    serviceQuantity: data['serviceQuantity'] as String?,
-  );
+        serviceId: data['serviceID'] as String?,
+        servicePrice: data['servicePrice'] as String?,
+        serviceName: data['serviceName'] as String?,
+        serviceDiscount: data['serviceDiscount'] as dynamic,
+        serviceOriginalPrice: data['serviceOriginalPrice'] as dynamic,
+        type: data['type'] as String?,
+        serviceImage: data['serviceImage'] as String?,
+        serviceQuantity: data['serviceQuantity'] as String?,
+      );
 
   Map<String, dynamic> toMap() => {
-    'serviceID': serviceId,
-    'servicePrice': servicePrice,
-    'serviceName': serviceName,
-    'serviceDiscount': serviceDiscount,
-    'serviceOriginalPrice': serviceOriginalPrice,
-    'type': type,
-    'serviceImage': serviceImage,
-    'serviceQuantity': serviceQuantity,
-  };
+        'serviceID': serviceId,
+        'servicePrice': servicePrice,
+        'serviceName': serviceName,
+        'serviceDiscount': serviceDiscount,
+        'serviceOriginalPrice': serviceOriginalPrice,
+        'type': type,
+        'serviceImage': serviceImage,
+        'serviceQuantity': serviceQuantity,
+      };
 
   /// `dart:convert`
   ///

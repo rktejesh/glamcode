@@ -5,7 +5,6 @@ import 'package:glamcode/data/model/packages_model/preferred_pack_model.dart';
 import 'package:glamcode/util/dimensions.dart';
 import 'package:glamcode/view/base/package_tile.dart';
 
-
 class Packages extends StatefulWidget {
   const Packages({Key? key}) : super(key: key);
 
@@ -46,15 +45,16 @@ class _PackagesState extends State<Packages> {
                 if (snapshot.hasData) {
                   preferredPackData = snapshot.data!;
                 }
-                List<ServicePackage> preferredPackList = preferredPackData.preferredPack ?? [];
+                List<ServicePackage> preferredPackList =
+                    preferredPackData.preferredPack ?? [];
                 return ListView.builder(
+                  key: UniqueKey(),
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: preferredPackList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return PackageTile(
-                      servicePackage:
-                          preferredPackList[index],
+                      servicePackage: preferredPackList[index],
                     );
                   },
                 );

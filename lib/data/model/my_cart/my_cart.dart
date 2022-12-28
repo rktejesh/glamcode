@@ -21,24 +21,24 @@ class MyCart extends Equatable {
   });
 
   factory MyCart.fromMap(Map<String, dynamic> data) => MyCart(
-    status: data['status'] as String?,
-    message: data['message'] as String?,
-    productsArray: (data['productsArray'] as List<dynamic>?)
-        ?.map((e) => ProductsArray.fromMap(e as Map<String, dynamic>))
-        .toList(),
-    tax: data['tax'] as dynamic,
-    extraFees: (data['extraFees'] as List<dynamic>?)
-        ?.map((e) => ExtraFee.fromMap(e as Map<String, dynamic>))
-        .toList(),
-  );
+        status: data['status'] as String?,
+        message: data['message'] as String?,
+        productsArray: (data['productsArray'] as List<dynamic>?)
+            ?.map((e) => ProductsArray.fromMap(e as Map<String, dynamic>))
+            .toList(),
+        tax: data['tax'] as dynamic,
+        extraFees: (data['extraFees'] as List<dynamic>?)
+            ?.map((e) => ExtraFee.fromMap(e as Map<String, dynamic>))
+            .toList(),
+      );
 
   Map<String, dynamic> toMap() => {
-    'status': status,
-    'message': message,
-    'productsArray': productsArray?.map((e) => e.toMap()).toList(),
-    'tax': tax,
-    'extraFees': extraFees?.map((e) => e.toMap()).toList(),
-  };
+        'status': status,
+        'message': message,
+        'productsArray': productsArray?.map((e) => e.toMap()).toList(),
+        'tax': tax,
+        'extraFees': extraFees?.map((e) => e.toMap()).toList(),
+      };
 
   /// `dart:convert`
   ///

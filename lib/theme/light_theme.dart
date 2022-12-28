@@ -4,8 +4,9 @@ import 'package:glamcode/util/dimensions.dart';
 ThemeData light({Color color = const Color(0xFFFFFFFF)}) => ThemeData(
       fontFamily: 'Roboto',
       appBarTheme: AppBarTheme(
-        color: Colors.black,
-          titleTextStyle: TextStyle(color: Colors.white, fontSize: Dimensions.fontSizeExtraLarge)),
+          color: Colors.black,
+          titleTextStyle: TextStyle(
+              color: Colors.white, fontSize: Dimensions.fontSizeExtraLarge)),
       primaryColor: color,
       // secondaryHeaderColor: const Color(0xFF1ED7AA),
       // disabledColor: const Color(0xFFBABFC4),

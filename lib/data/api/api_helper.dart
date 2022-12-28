@@ -4,6 +4,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:glamcode/data/model/additional_fee_model.dart';
 import 'package:glamcode/data/model/address_details_model.dart';
 import 'package:glamcode/data/model/about.dart';
 import 'package:glamcode/data/model/auth.dart';
@@ -128,7 +129,7 @@ class DioClient {
     Coupons? couponsModel;
     try {
       Response couponsModelData = await _dio.get(AppConstants.getCouponsList);
-      couponsModel = Coupons.fromJson(couponsModelData.data);
+      couponsModel = Coupons.fromMap(couponsModelData.data);
     } on DioError catch (e) {
       if (e.response != null) {
       } else {}
@@ -140,8 +141,10 @@ class DioClient {
     AddressDetailsModel? addressDetailsModel;
     try {
       User currentUser = await auth.currentUser;
-      Response addressDetailsModelData = await _dio.get("${AppConstants.getAddressDetails}/${currentUser.id}");
-      addressDetailsModel = AddressDetailsModel.fromJson(addressDetailsModelData.data);
+      Response addressDetailsModelData =
+          await _dio.get("${AppConstants.getAddressDetails}/${currentUser.id}");
+      addressDetailsModel =
+          AddressDetailsModel.fromJson(addressDetailsModelData.data);
     } on DioError catch (e) {
       if (e.response != null) {
       } else {}
@@ -214,6 +217,81 @@ class DioClient {
       print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-==-=--==-=-=> ${e.toString()}");
     }
     return myCartModel;
+  }
+
+  Future<bool> addAddress(AddressDetails addressDetails) async {
+    String jsonData = json.encode(addressDetails.toJson());
+    try {
+      Response response = await _dio.post(
+        AppConstants.addAddress,
+        data: jsonData,
+      );
+      print(response);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> editAddress(AddressDetails addressDetails) async {
+    String jsonData = json.encode(addressDetails.toJson());
+    try {
+      Response response = await _dio.post(
+        AppConstants.addAddress,
+        data: jsonData,
+      );
+      print(response);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> deleteAddress(int id) async {
+    try {
+      User currentUser = await auth.currentUser;
+      Response response = await _dio.delete(
+        "${AppConstants.deleteAddress}/${currentUser.id}/$id",
+      );
+      print(response);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return false;
+    }
+    return true;
+  }
+
+  Future<AdditionalFeeModel?> getAnyDataCall() async {
+    AdditionalFeeModel additionalFeeModel;
+    Map<String, dynamic> data = {
+      "appid": r"Qswde@#$@ESCDdreghreiue#%$#^fkjhdhR$$#hvjkdhkdf%^$$#hdgjdf",
+      "coldata": [
+        {
+          "qrycol": "3",
+          "loccol": Auth.instance.prefs.getInt("selectedLocationId"),
+          "diskmcol": "10"
+        }
+      ]
+    };
+
+    try {
+      Response response = await _dio.post(
+        AppConstants.getanydatacall,
+        data: data,
+      );
+      additionalFeeModel = AdditionalFeeModel.fromJson(response.data);
+      print(response);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return null;
+    }
+    return additionalFeeModel;
   }
 
   Future<bool?> sendOtp(String phoneNumber) async {

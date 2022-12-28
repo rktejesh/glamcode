@@ -10,7 +10,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glamcode/app.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/auth.dart';
+import 'package:glamcode/data/model/cart_data.dart';
+import 'package:glamcode/data/model/my_cart/cart.dart';
+import 'package:glamcode/data/repository/cart_data_repository.dart';
+import 'package:glamcode/data/repository/shopping_repository.dart';
 import 'package:glamcode/data/repository/user_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 void main() {
@@ -18,7 +23,10 @@ void main() {
     // Build our app and trigger a frame.
     Auth auth = Auth.instance;
     DioClient dioClient = DioClient.instance;
-    await tester.pumpWidget( MyApp(userRepository: UserRepository(auth: auth, dioClient: dioClient), dioClient: DioClient.instance, auth: Auth.instance,));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    ShoppingRepository shoppingRepository = ShoppingRepository(auth: auth, dioClient: dioClient, sharedPreferences: sharedPreferences);
+    CartDataRepository cartDataRepository = CartDataRepository(auth: auth, dioClient: dioClient, shoppingRepository: shoppingRepository);
+    await tester.pumpWidget( MyApp(userRepository: UserRepository(auth: auth, dioClient: dioClient), dioClient: DioClient.instance, auth: Auth.instance, shoppingRepository: shoppingRepository, cartDataRepository: cartDataRepository,));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

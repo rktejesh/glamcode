@@ -28,9 +28,7 @@ class _AboutScreenState extends State<AboutScreen> {
         title: const Text("About Glam Code"),
         automaticallyImplyLeading: true,
         backgroundColor: Colors.black,
-        titleTextStyle: const TextStyle(
-            color: Colors.white
-        ),
+        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: FutureBuilder<About?>(
         future: _future,
@@ -46,7 +44,7 @@ class _AboutScreenState extends State<AboutScreen> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding:
-                  const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
                   child: HtmlWidget(about.pageData.toString()),
                 ),
               ),

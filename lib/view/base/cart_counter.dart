@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/loading_screen.dart';
+
+import '../../blocs/cart/cart_bloc.dart';
+import '../../blocs/cart_data/cart_data_bloc.dart';
+import '../../data/model/packages_model/service.dart';
 
 class CartCounter extends StatefulWidget {
-  final int count;
-  const CartCounter({Key? key, required this.count}) : super(key: key);
+  final ServicePackage servicePackage;
+  const CartCounter({Key? key, required this.servicePackage}) : super(key: key);
 
   @override
   State<CartCounter> createState() => _CartCounterState();
@@ -14,72 +20,91 @@ class _CartCounterState extends State<CartCounter> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-          boxShadow: const [
-            BoxShadow(
-              color: Color.fromRGBO(50, 50, 93, 0.25),
-              spreadRadius: -2,
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.3),
-              spreadRadius: -3,
-              blurRadius: 6,
-              offset: Offset(0, 3),
-            ),
-          ]),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-              onTap: () {
-                setState(() {
-                  if (count > 0) {
-                    count--;
-                  }
-                });
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                child: Icon(
-                  Icons.remove,
-                  size: Dimensions.fontSizeOverLarge,
-                ),
-              )),
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: Dimensions.PADDING_SIZE_SMALL,
-                vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, state) {
+        if (state is CartLoading) {
+          return const LoadingScreen();
+        } else if (state is CartLoaded) {
+          final isInCart = state.cart.items.containsKey(widget.servicePackage);
+          if (isInCart) {
+            count = state.cart.items[widget.servicePackage] ?? 0;
+          }
+          return Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3), color: Colors.white),
-            child: Text(
-              count.toString(),
-              style: TextStyle(
-                  color: Colors.black, fontSize: Dimensions.fontSizeOverLarge),
-            ),
-          ),
-          InkWell(
-              onTap: () {
-                setState(() {
-                  count++;
-                });
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                child: Icon(
-                  Icons.add,
-                  size: Dimensions.fontSizeOverLarge,
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.white,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromRGBO(50, 50, 93, 0.25),
+                    spreadRadius: -2,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                  BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.3),
+                    spreadRadius: -3,
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ]),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                    onTap: () {
+                      setState(() {
+                        context
+                            .read<CartBloc>()
+                            .add(CartItemRemoved(widget.servicePackage));
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                          Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      child: Icon(
+                        Icons.remove,
+                        size: Dimensions.fontSizeOverLarge,
+                      ),
+                    )),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.PADDING_SIZE_SMALL,
+                      vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: Colors.white),
+                  child: Text(
+                    count.toString(),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: Dimensions.fontSizeOverLarge),
+                  ),
                 ),
-              )),
-        ],
-      ),
+                InkWell(
+                    onTap: () {
+                      setState(() {
+                        context
+                            .read<CartBloc>()
+                            .add(CartItemAdded(widget.servicePackage));
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                          Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                      child: Icon(
+                        Icons.add,
+                        size: Dimensions.fontSizeOverLarge,
+                      ),
+                    )),
+              ],
+            ),
+          );
+        } else {
+          /// TODO: error
+          return const Text("error");
+        }
+      },
     );
   }
 }

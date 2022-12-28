@@ -1,11 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/data/api/api_helper.dart';
+import 'package:glamcode/data/model/address_details_model.dart';
 import 'package:glamcode/view/base/custom_text_field.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+import 'package:glamcode/view/base/loading_screen.dart';
+import 'package:glamcode/view/screens/cart/cart_screen.dart';
+
+import '../../../data/model/auth.dart';
+import '../../../data/model/user.dart';
+import '../../../util/dimensions.dart';
 
 class NewAddressScreen extends StatefulWidget {
-  const NewAddressScreen({Key? key}) : super(key: key);
+  final String address;
+  final String locAddress;
+  final num latitude;
+  final num longitude;
+  const NewAddressScreen(
+      {Key? key,
+      required this.address,
+      required this.locAddress,
+      required this.latitude,
+      required this.longitude})
+      : super(key: key);
 
   @override
   State<NewAddressScreen> createState() => _NewAddressScreenState();
@@ -17,6 +34,26 @@ class _NewAddressScreenState extends State<NewAddressScreen>
   TextEditingController addressController = TextEditingController();
   TextEditingController locationAddressController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
+  late User currentUser;
+  bool loading = false;
+
+  getUser() async {
+    User user = await Auth.instance.currentUser;
+    mobileController.text = user.mobile ?? "";
+    currentUser = user;
+  }
+
+  @override
+  void initState() {
+    addressController.text = widget.address;
+    locationAddressController.text = widget.locAddress;
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getUser();
+    });
+  }
+
+  final _newAddressFormKey = GlobalKey<FormState>();
 
   @override
   bool get wantKeepAlive => true;
@@ -25,66 +62,90 @@ class _NewAddressScreenState extends State<NewAddressScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      body: Form(
-        child: PlacePicker(
-          apiKey: r'AIzaSyAbpe1uQUBDEaQ8hyOEnEj4viZ0tbIud2I',
-          onPlacePicked: (PickResult result) {
-            print(result.formattedAddress);
-          },
-          initialPosition: const LatLng(19.0759837, 72.8776559),
-          useCurrentLocation: true,
-          automaticallyImplyAppBarLeading: false,
-          enableMapTypeButton: false,
-          strictbounds: true,
-          onAutoCompleteFailed: (error) {
-            print(error);
-          },
-          /*selectedPlaceWidgetBuilder:
-                (_, selectedPlace, state, isSearchBarFocused) {
-              return isSearchBarFocused
-                  ? Container()
-                  // Use FloatingCard or just create your own Widget.
-                  : FloatingCard(
-                      bottomPosition:
-                          0.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
-                      leftPosition: 0.0,
-                      rightPosition: 0.0,
-                      width: 500,
-                      borderRadius: BorderRadius.circular(12.0),
-                      child: state == SearchingState.Searching
-                          ? const Center(child: CircularProgressIndicator(color: Colors.black,))
-                          : TextButton(
-                              onPressed: () {
-                                print("do something with [selectedPlace] data");
-                              },
-                              child: const Text("data"),
-                            ),
-                    );
-              */ /*SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    customTextField("Name", nameController, TextInputType.text),
-                    customTextField(
-                        "Address", addressController, TextInputType.text),
-                    customTextField("Location Address",
-                        locationAddressController, TextInputType.streetAddress),
-                    customTextField(
-                        "Mobile Number", mobileController, TextInputType.phone),
-                    Padding(
-                      padding:
-                          const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                      child: TextButton(
-                        onPressed: () {},
-                        child: const Text("Add Address"),
-                      ),
-                    ),
-                  ],
-                ),
-              );*/ /*
-            },*/
-        ),
+      appBar: AppBar(
+        title: const Text("ADD NEW ADDRESS"),
       ),
+      body: loading
+          ? const LoadingScreen()
+          : Form(
+              key: _newAddressFormKey,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: Dimensions.PADDING_SIZE_LARGE),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      customTextField(
+                          "Name", nameController, TextInputType.text, null),
+                      customTextField("Address", addressController,
+                          TextInputType.text, null),
+                      customTextField(
+                          "Location Address",
+                          locationAddressController,
+                          TextInputType.streetAddress,
+                          null),
+                      customTextField("Mobile Number", mobileController,
+                          TextInputType.phone, null),
+                      Padding(
+                        padding: const EdgeInsets.all(
+                            Dimensions.PADDING_SIZE_DEFAULT),
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              loading = true;
+                            });
+                            AddressDetails address = AddressDetails(
+                                userId: currentUser.id,
+                                addressHeading: nameController.text,
+                                address: addressController.text,
+                                street: locationAddressController.text,
+                                lattitude: widget.latitude,
+                                longitude: widget.longitude,
+                                mobileNumber: currentUser.mobile,
+                                callingCode: currentUser.callingCode);
+                            if (_newAddressFormKey.currentState!.validate()) {
+                              DioClient.instance
+                                  .addAddress(address)
+                                  .then((value) {
+                                if (value) {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CartScreen()),
+                                      ModalRoute.withName('/'));
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                } else {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Error adding address',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              });
+                            } else {
+                              setState(() {
+                                loading = false;
+                              });
+                            }
+                          },
+                          child: const Text("Add Address"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

@@ -28,9 +28,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
         title: const Text("Terms and Conditions"),
         automaticallyImplyLeading: true,
         backgroundColor: Colors.black,
-        titleTextStyle: const TextStyle(
-            color: Colors.white
-        ),
+        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: FutureBuilder<TermsModel?>(
         future: _future,
@@ -44,12 +42,12 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             }
             return SafeArea(
               child: SingleChildScrollView(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                    child: HtmlWidget(termsModel.pageData.toString()),
-                  ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                  child: HtmlWidget(termsModel.pageData.toString()),
                 ),
+              ),
             );
           } else {
             return Container();

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:glamcode/data/model/packages_model/category.dart';
 
-
 class ServicePackage extends Equatable {
   final int? id;
   final String? name;
@@ -119,8 +118,7 @@ class ServicePackage extends Equatable {
         discountedPrice: data['discounted_price'] as num?,
         category: data['category'] == null
             ? null
-            : Category.fromMap(
-                data['category'] as Map<String, dynamic>),
+            : Category.fromMap(data['category'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toMap() => {
