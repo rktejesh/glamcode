@@ -3,6 +3,7 @@ import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/packages_model/service.dart';
 import 'package:glamcode/data/model/packages_model/preferred_pack_model.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/base/package_tile.dart';
 
 class Packages extends StatefulWidget {
@@ -38,7 +39,7 @@ class _PackagesState extends State<Packages> {
             future: _future,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator(color: Color(0xFFA854FC),));
               } else if (snapshot.connectionState == ConnectionState.done) {
                 PreferredPackModel preferredPackData =
                     const PreferredPackModel();
@@ -59,8 +60,7 @@ class _PackagesState extends State<Packages> {
                   },
                 );
               } else {
-                ///TODO: write error page
-                return Container();
+                return const CustomError();
               }
             })
       ],

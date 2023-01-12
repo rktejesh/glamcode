@@ -13,7 +13,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(
-          color: Colors.black,
+          color: Color(0xFFA854FC),
         ),
       ),
     );

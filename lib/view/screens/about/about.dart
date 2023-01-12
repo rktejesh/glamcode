@@ -3,6 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/about.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/base/loading_screen.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -27,8 +28,6 @@ class _AboutScreenState extends State<AboutScreen> {
       appBar: AppBar(
         title: const Text("About Glam Code"),
         automaticallyImplyLeading: true,
-        backgroundColor: Colors.black,
-        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: FutureBuilder<About?>(
         future: _future,
@@ -39,16 +38,18 @@ class _AboutScreenState extends State<AboutScreen> {
             About about = About();
             if (snapshot.hasData) {
               about = snapshot.data!;
-            }
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                  child: HtmlWidget(about.pageData.toString()),
+              return SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                    child: HtmlWidget(about.pageData.toString()),
+                  ),
                 ),
-              ),
-            );
+              );
+            }else {
+              return const CustomError();
+            }
           } else {
             return Container();
           }

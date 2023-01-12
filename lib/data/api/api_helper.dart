@@ -5,9 +5,11 @@ import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:glamcode/data/model/additional_fee_model.dart';
+import 'package:glamcode/data/model/addon_model/addon_model.dart';
 import 'package:glamcode/data/model/address_details_model.dart';
 import 'package:glamcode/data/model/about.dart';
 import 'package:glamcode/data/model/auth.dart';
+import 'package:glamcode/data/model/booking_slots_model.dart';
 import 'package:glamcode/data/model/bookings.dart';
 import 'package:glamcode/data/model/coupons.dart';
 import 'package:glamcode/data/model/gallery.dart';
@@ -16,10 +18,12 @@ import 'package:glamcode/data/model/location_model.dart';
 import 'package:glamcode/data/model/main_categories_model.dart';
 import 'package:glamcode/data/model/my_cart/my_cart.dart';
 import 'package:glamcode/data/model/packages_model/packages_model.dart';
+import 'package:glamcode/data/model/payments/PaymentResponse.dart';
 import 'package:glamcode/data/model/privacy.dart';
 import 'package:glamcode/data/model/terms.dart';
 import 'package:glamcode/data/model/user.dart';
 import 'package:glamcode/util/app_constants.dart';
+import 'package:intl/intl.dart';
 
 import '../model/packages_model/preferred_pack_model.dart';
 
@@ -219,14 +223,29 @@ class DioClient {
     return myCartModel;
   }
 
-  Future<bool> addAddress(AddressDetails addressDetails) async {
+  Future<AddressDetails?> addAddress(AddressDetails addressDetails) async {
     String jsonData = json.encode(addressDetails.toJson());
+    AddressDetails res = AddressDetails();
     try {
       Response response = await _dio.post(
         AppConstants.addAddress,
         data: jsonData,
       );
-      print(response);
+      res = AddressDetails.fromJson(response.data["addressDetail"]);
+      print(res.toJson());
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return null;
+    }
+    return res;
+  }
+
+  Future<bool> setPrimaryAddress(AddressDetails addressDetails) async {
+    try {
+      Response response = await _dio.post(
+        "${AppConstants.setPrimaryAddress}/${addressDetails.addressId}",
+      );
     } on DioError catch (e) {
       if (e.response != null) {
       } else {}
@@ -235,13 +254,37 @@ class DioClient {
     return true;
   }
 
-  Future<bool> editAddress(AddressDetails addressDetails) async {
+  Future<AddressDetails?> editAddress(AddressDetails addressDetails) async {
     String jsonData = json.encode(addressDetails.toJson());
+    AddressDetails res = AddressDetails();
     try {
       Response response = await _dio.post(
         AppConstants.addAddress,
         data: jsonData,
       );
+      res = AddressDetails.fromJson(response.data["addressDetail"]);
+      print(res.toJson());
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return null;
+    }
+    return res;
+  }
+
+  Future<bool> editProfile(User user) async {
+    String jsonData = user.toJson();
+    print(jsonData);
+    try {
+      Response response = await _dio.post("${AppConstants.editProfile}${user.id}",
+          data: jsonData,
+          options: Options(
+              contentType: 'application/json',
+              followRedirects: true,
+              validateStatus: (status) => true,
+              headers: {
+                "Accept": "application/json",
+              }));
       print(response);
     } on DioError catch (e) {
       if (e.response != null) {
@@ -264,6 +307,19 @@ class DioClient {
       return false;
     }
     return true;
+  }
+
+  Future<AddonModel?> getAddons() async {
+    AddonModel? addonModel;
+    try {
+      Response addonsModelData = await _dio.get(AppConstants.addonDetails);
+      addonModel = AddonModel.fromMap(addonsModelData.data);
+    } on DioError catch (e) {
+      print("==========================================> ${e.response}");
+    } catch (e) {
+      print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-==-=--==-=-=> ${e.toString()}");
+    }
+    return addonModel;
   }
 
   Future<AdditionalFeeModel?> getAnyDataCall() async {
@@ -292,6 +348,43 @@ class DioClient {
       return null;
     }
     return additionalFeeModel;
+  }
+
+  Future<BookingSlotsModel?> getBookingSlots(DateTime dateTime) async {
+    User currentUser = await auth.currentUser;
+    BookingSlotsModel bookingSlotsModel;
+    final df = DateFormat('yyyy-MM-dd');
+    Map<String, dynamic> data = {"bookingDate": df.format(dateTime)};
+    try {
+      Response response = await _dio.post(
+        '${AppConstants.slotDetails}${currentUser.id}',
+        data: data,
+      );
+      bookingSlotsModel = BookingSlotsModel.fromJson(response.data);
+      print(response);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return null;
+    }
+    return bookingSlotsModel;
+  }
+
+  Future<PaymentResponseModel?> makePayment(String jsonData) async {
+    PaymentResponseModel paymentResponseModel = PaymentResponseModel();
+    try {
+      Response response = await _dio.post(
+        AppConstants.bookingDataFull,
+        data: jsonData,
+      );
+      paymentResponseModel = PaymentResponseModel.fromJson(response.data);
+      print(response);
+    } on DioError catch (e) {
+      if (e.response != null) {
+      } else {}
+      return null;
+    }
+    return paymentResponseModel;
   }
 
   Future<bool?> sendOtp(String phoneNumber) async {

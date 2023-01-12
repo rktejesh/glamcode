@@ -30,9 +30,15 @@ class CouponRepository {
 
   Future<CouponData> get currentCoupon => init();
 
-  updateCurrentUserInstance(CouponData couponData) async {
+  updateCurrentCouponInstance(CouponData couponData) async {
     SharedPreferences.getInstance().then((sharedUser) {
       sharedUser.setString("coupon", couponData.toJson());
+    });
+  }
+
+  clearCouponInstance() {
+    SharedPreferences.getInstance().then((sharedUser) {
+      sharedUser.setString("coupon", const CouponData().toJson());
     });
   }
 }

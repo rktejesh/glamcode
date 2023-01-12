@@ -29,10 +29,13 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Image.asset("assets/images/bgLogin.png"),
                       SafeArea(
-                          child: Image.asset(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(
                         "assets/images/loginLogo.png",
-                        height: MediaQuery.of(context).size.width * 0.3,
-                      ))
+                        height: MediaQuery.of(context).size.width * 0.2,
+                      ),
+                          ))
                     ],
                   ),
                   Padding(
@@ -50,14 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                                   focusColor: Colors.black,
                                   floatingLabelStyle:
                                       TextStyle(color: Colors.black),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black)),
-                                  labelText: "Phone Number",
-                                  border: OutlineInputBorder(),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black))),
+                                  labelText: "Phone Number",),
                               validator: CustomValidator().validateMobile,
                               keyboardType: TextInputType.phone,
                               autovalidateMode:
@@ -70,11 +66,6 @@ class _LoginPageState extends State<LoginPage> {
                                 Dimensions.PADDING_SIZE_DEFAULT),
                             child: TextButton(
                               onPressed: () {
-                                /*Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                        const OTPScreen(
-                                            phoneNumber: "")));*/
                                 setState(() {
                                   loading = true;
                                 });
@@ -105,6 +96,10 @@ class _LoginPageState extends State<LoginPage> {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
                                     }
+                                  });
+                                } else {
+                                  setState(() {
+                                    loading = false;
                                   });
                                 }
                               },

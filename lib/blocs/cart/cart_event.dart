@@ -27,3 +27,8 @@ class CartItemRemoved extends CartEvent {
   @override
   List<Object> get props => [item];
 }
+
+class CartCleared extends CartEvent {
+  @override
+  List<Object> get props => [];
+}

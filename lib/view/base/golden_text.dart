@@ -19,6 +19,7 @@ class GoldenText extends StatelessWidget {
         style: TextStyle(
           fontSize: Dimensions.fontSizeSmall,
           color: Colors.orange,
+            overflow: TextOverflow.fade
         ),
       ),
     );

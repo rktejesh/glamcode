@@ -17,6 +17,7 @@ class CartData extends Equatable {
   final num? extraFees;
   final num? distanceFee;
   final num? amountToPay;
+  final num? mincheck;
   final String? paymentStatus;
   final String? source;
   final String? additionalNotes;
@@ -36,6 +37,7 @@ class CartData extends Equatable {
     this.extraFees,
     this.distanceFee,
     this.amountToPay,
+    this.mincheck,
     this.paymentStatus,
     this.source,
     this.additionalNotes,
@@ -56,6 +58,7 @@ class CartData extends Equatable {
         extraFees: data['extra_fees'] as num?,
         distanceFee: data['distance_fee'] as num?,
         amountToPay: data['amount_to_pay'] as num?,
+        mincheck: data['mincheck'] as num?,
         paymentStatus: data['payment_status'] as String?,
         source: data['source'] as String?,
         additionalNotes: data['additional_notes'] as String?,
@@ -76,6 +79,7 @@ class CartData extends Equatable {
         'extra_fees': extraFees,
         'distance_fee': distanceFee,
         'amount_to_pay': amountToPay,
+        'mincheck': mincheck,
         'payment_status': paymentStatus,
         'source': source,
         'additional_notes': additionalNotes,
@@ -108,6 +112,7 @@ class CartData extends Equatable {
     num? extraFees,
     num? distanceFee,
     num? amountToPay,
+    num? mincheck,
     String? paymentStatus,
     String? source,
     String? additionalNotes,
@@ -127,6 +132,7 @@ class CartData extends Equatable {
       extraFees: extraFees ?? this.extraFees,
       distanceFee: distanceFee ?? this.distanceFee,
       amountToPay: amountToPay ?? this.amountToPay,
+      mincheck: mincheck ?? this.mincheck,
       paymentStatus: paymentStatus ?? this.paymentStatus,
       source: source ?? this.source,
       additionalNotes: additionalNotes ?? this.additionalNotes,
@@ -153,6 +159,7 @@ class CartData extends Equatable {
       extraFees,
       distanceFee,
       amountToPay,
+      mincheck,
       paymentStatus,
       source,
       additionalNotes,

@@ -17,6 +17,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<CartStarted>(_onStarted);
     on<CartItemAdded>(_onItemAdded);
     on<CartItemRemoved>(_onItemRemoved);
+    on<CartCleared>(_onCartCleared);
   }
 
   final ShoppingRepository shoppingRepository;
@@ -56,11 +57,29 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       try {
         await shoppingRepository.removeItemFromCart(event.item);
         if (state.cart.items[event.item] != null &&
-            state.cart.items[event.item]! > 0) {
+            state.cart.items[event.item]! > 1) {
           state.cart.items[event.item] =
               (state.cart.items[event.item] ?? 0) - 1;
+        } else if (state.cart.items[event.item] != null &&
+            state.cart.items[event.item]! == 1) {
+          state.cart.items.remove(event.item);
         }
         emit(CartLoaded(cart: Cart(items: {...state.cart.items})));
+        cartDataBloc.add(CartDataUpdate());
+      } catch (_) {
+        print(_.toString());
+        emit(CartError());
+      }
+    }
+  }
+
+  Future<void> _onCartCleared(
+      CartCleared event, Emitter<CartState> emit) async {
+    final state = this.state;
+    if (state is CartLoaded) {
+      try {
+        await shoppingRepository.clearCart();
+        emit(const CartLoaded(cart: Cart(items: {})));
         cartDataBloc.add(CartDataUpdate());
       } catch (_) {
         print(_.toString());

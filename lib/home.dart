@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glamcode/view/screens/dashboard/dashboard_screen.dart';
 import 'package:glamcode/view/screens/login/login_screen.dart';
+import 'package:glamcode/view/screens/profile/widget/edit_profile.dart';
+import 'package:glamcode/view/screens/profile/widget/register_profile.dart';
 
 import 'blocs/auth/auth_bloc.dart';
 
@@ -12,13 +14,18 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
+      bloc: authBloc,
       builder: (context, state) {
         if (state is UnauthenticatedState) {
           return LoginPage(
             authBloc: authBloc,
           );
         } else if (state is AuthenticatedState) {
-          return const DashboardScreen(pageIndex: 0);
+          if(state.user.name == null || state.user.name == "") {
+            return RegisterProfileScreen(user: state.user);
+          } else {
+            return const DashboardScreen(pageIndex: 0);
+          }
         } else if (state is LoadingAuthenticationState) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ErrorAuthenticationState) {

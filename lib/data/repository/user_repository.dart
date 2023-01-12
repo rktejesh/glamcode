@@ -92,4 +92,15 @@ class UserRepository {
       rethrow;
     }
   }
+
+  Future<bool> updateCurrentUser(User user) async {
+    try {
+      await dioClient.editProfile(user);
+      auth.updateCurrentUserInstance(user);
+      return true;
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
 }

@@ -15,6 +15,8 @@ import 'package:glamcode/view/screens/notification/notification_screen.dart';
 import 'package:glamcode/view/screens/profile/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../util/custom_drawer.dart';
+
 class DashboardScreen extends StatefulWidget {
   final int pageIndex;
   const DashboardScreen({super.key, required this.pageIndex});
@@ -37,7 +39,6 @@ class DashboardScreenState extends State<DashboardScreen> {
   late List<BottomNavigationBarItem> bottomNavbarList;
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey();
   bool _canExit = kIsWeb ? true : false;
-  final bool _isLogin = false;
   late SharedPreferences prefs;
   late bool isCitySelected;
 
@@ -45,17 +46,17 @@ class DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
 
-    //_isLogin = Get.find<AuthController>().isLoggedIn();
-
-    if (_isLogin) {
-      //Get.find<OrderController>().getRunningOrders(1, fromDashBoard: true);
-    }
-
     _pageIndex = widget.pageIndex;
 
     _pageController = PageController(initialPage: widget.pageIndex);
 
-    _titles = ["Home", "Gallery", "My Bookings", "Notifications", "Profile"];
+    _titles = [
+      "GLAM CODE",
+      "Gallery",
+      "My Bookings",
+      "Notifications",
+      "Profile"
+    ];
 
     bottomNavbarList = [
       bottomNavItem(context, Icons.home_filled, "Home"),
@@ -82,10 +83,10 @@ class DashboardScreenState extends State<DashboardScreen> {
             return true;
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('back_press_again_to_exit',
+              content: Text('Back press again to exit.',
                   style: TextStyle(color: Colors.white)),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.green,
+              backgroundColor: Color(0xFF882EDF),
               duration: Duration(seconds: 2),
               margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
             ));
@@ -100,13 +101,17 @@ class DashboardScreenState extends State<DashboardScreen> {
       child: (Auth.instance.prefs.containsKey("selectedLocation") &&
               Auth.instance.prefs.containsKey("selectedLocationId"))
           ? Scaffold(
+              backgroundColor: const Color(0xFFFFF1F1),
               appBar: AppBar(
+                centerTitle: _pageIndex == 0 ? true : false,
                 elevation: 0,
                 title: Text(
                   _titles[_pageIndex],
-                  style: const TextStyle(color: Colors.black),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                automaticallyImplyLeading: false,
                 backgroundColor: Colors.white,
               ),
               key: _scaffoldKey,
@@ -118,8 +123,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                       currentIndex: _pageIndex,
                       showUnselectedLabels: true,
                       type: BottomNavigationBarType.fixed,
-                      selectedItemColor: Colors.deepPurpleAccent,
+                      selectedItemColor: const Color(0xFF882EDF),
                     ),
+              drawer: const CustomDrawer(),
               body: PageView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _pageController,

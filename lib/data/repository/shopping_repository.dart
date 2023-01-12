@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:glamcode/data/model/addon_model/addon_datum.dart';
 import 'package:glamcode/data/model/packages_model/service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,12 +60,80 @@ class ShoppingRepository {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (prefs.containsKey("cart")) {
         cart = cartDecode(prefs.getString("cart") ?? "{}");
-        if (cart.containsKey(servicePackage) && cart[servicePackage]! > 0) {
+        if (cart.containsKey(servicePackage) && cart[servicePackage]! > 1) {
           cart[servicePackage] = (cart[servicePackage] ?? 1) - 1;
+        } else if (cart.containsKey(servicePackage) && cart[servicePackage]! == 1) {
+          cart.remove(servicePackage);
         }
         prefs.setString("cart", cartEncode(cart));
       } else {
         cart = {};
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> clearCart() async {
+    Map<ServicePackage, int> cart = {};
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString("cart", cartEncode(cart));
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<List<AddonDatum>> loadAddonItems() async {
+    List<AddonDatum> addonList = [];
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey("addons")) {
+        List<String> addonStringList = prefs.getStringList("addons") ?? [];
+        addonList = addonListDecode(addonStringList);
+      } else {
+        prefs.setStringList("addons", addonListEncode(addonList));
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+    return addonList;
+  }
+
+  Future<void> addAddonToCart(AddonDatum addonDatum) async {
+    List<AddonDatum> addonList = [];
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey("addons")) {
+        addonList = addonListDecode(prefs.getStringList("addons") ?? []);
+        if(addonList.contains(addonDatum) == false) {
+          addonList.add(addonDatum);
+        }
+        prefs.setStringList("addons", addonListEncode(addonList));
+      } else {
+        addonList = [];
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<void> removeAddonFromCart(AddonDatum addonDatum) async {
+    List<AddonDatum> addonList = [];
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey("addons")) {
+        addonList = addonListDecode(prefs.getStringList("addons") ?? []);
+        if(addonList.contains(addonDatum)) {
+          addonList.remove(addonDatum);
+        }
+        prefs.setStringList("addons", addonListEncode(addonList));
+      } else {
+        addonList = [];
       }
     } catch (e) {
       print(e);
@@ -84,6 +153,20 @@ class ShoppingRepository {
       } else {
         cart = {};
         sharedPreferences.setString("cart", cartEncode(cart));
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+
+    List<AddonDatum> addonList = [];
+    try {
+      if (sharedPreferences.containsKey("addons")) {
+        List<String> addonStringList = sharedPreferences.getStringList("addons") ?? [];
+        addonList = addonListDecode(addonStringList);
+        for (var element in addonList) {
+          total += num.parse(element.price ?? "0");
+        }
       }
     } catch (e) {
       print(e);
@@ -109,6 +192,20 @@ class ShoppingRepository {
       print(e);
       rethrow;
     }
+
+    List<AddonDatum> addonList = [];
+    try {
+      if (sharedPreferences.containsKey("addons")) {
+        List<String> addonStringList = sharedPreferences.getStringList("addons") ?? [];
+        addonList = addonListDecode(addonStringList);
+        for (var element in addonList) {
+          total += num.parse(element.price ?? "0");
+        }
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
     return total;
   }
 }
@@ -128,4 +225,29 @@ Map<ServicePackage, int> cartDecode(String cart) {
     res[ServicePackage.fromMap(jsonDecode(key))] = value as int;
   });
   return res;
+}
+
+List<String> addonListEncode(List<AddonDatum> addonList) {
+  List<String> addonStringList = [];
+  for (var element in addonList) {
+    try {
+      addonStringList.add(element.toJson());
+    } catch (e) {
+      print(e);
+    }
+  }
+  return addonStringList;
+}
+
+List<AddonDatum> addonListDecode(List<String> addonStringList) {
+  List<AddonDatum> addonList = [];
+  for (var element in addonStringList) {
+    try {
+      addonList.add(AddonDatum.fromJson(element));
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+  return addonList;
 }

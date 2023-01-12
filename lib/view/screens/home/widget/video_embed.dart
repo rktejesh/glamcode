@@ -15,8 +15,7 @@ class _VideoEmbedState extends State<VideoEmbed> {
   bool autoPlay = false;
 
   String urlParser(String url) {
-    RegExp regExp = RegExp(
-      r"/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/",
+    RegExp regExp = RegExp(r"/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/",
       caseSensitive: false,
       multiLine: false,
     );

@@ -3,6 +3,8 @@ import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/home_page.dart';
 import 'package:glamcode/util/dimensions.dart';
 import 'package:glamcode/util/get_current_location.dart';
+import 'package:glamcode/view/base/bottomServiceBar.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/base/loading_screen.dart';
 import 'package:glamcode/view/screens/home/widget/customer_testimonials.dart';
 import 'package:glamcode/view/screens/home/widget/packages.dart';
@@ -42,39 +44,56 @@ class _HomeScreenState extends State<HomeScreen>
           HomePageModel homePageModel = HomePageModel();
           if (snapshot.hasData) {
             homePageModel = snapshot.data!;
-          }
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: <Widget>[
-              locationAppBar(context),
-              searchBar(),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                  child: Wrap(
-                    children: [
-                      ImageSlider(
-                        images: homePageModel.sliderImages ?? [],
+            return Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      _future = DioClient.instance.getHomePage();
+                    });
+                  },
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: <Widget>[
+                      locationAppBar(context),
+                      searchBar(),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(
+                              Dimensions.PADDING_SIZE_DEFAULT),
+                          child: Wrap(
+                            children: [
+                              ImageSlider(
+                                images: homePageModel.sliderImages ?? [],
+                              ),
+                              const ServicesGrid(),
+                              VideoEmbed(
+                                url: homePageModel.videos?.homePageVideoUrl ??
+                                    "https://www.youtube.com/watch?v=i-X4wtDprY8",
+                              ),
+                              const Packages(),
+                              CustomerTestimonials(
+                                reviews: homePageModel.reviews ?? [],
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                      const ServicesGrid(),
-                      VideoEmbed(
-                        url: homePageModel.videos?.homePageVideoUrl ??
-                            "https://www.youtube.com/watch?v=i-X4wtDprY8",
-                      ),
-                      const Packages(),
-                      CustomerTestimonials(
-                        reviews: homePageModel.reviews ?? [],
-                      )
                     ],
                   ),
                 ),
-              ),
-            ],
-          );
+                const Padding(
+                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                  child: BottomServiceBar(),
+                )
+              ],
+            );
+          } else {
+            return const CustomError();
+          }
         } else {
-          ///TODO: write error page
-          return Container();
+          return const CustomError();
         }
       },
     );
@@ -85,31 +104,27 @@ Widget locationAppBar(BuildContext context) {
   return SliverAppBar(
     backgroundColor: Colors.white,
     elevation: 0,
-    iconTheme:
-        IconThemeData(color: Colors.grey, size: Dimensions.fontSizeOverLarge),
+    iconTheme: IconThemeData(
+        color: const Color(0xFF882EDF), size: Dimensions.fontSizeOverLarge),
     toolbarHeight: Dimensions.fontSizeOverLarge * 1.5,
     pinned: true,
     floating: true,
-    title: FutureBuilder<String>(
-        future: getCurrentLocation(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Text(
-              snapshot.data ?? "",
-              style: TextStyle(
-                  fontSize: Dimensions.fontSizeDefault, color: Colors.black),
-              overflow: TextOverflow.ellipsis,
-            );
-          } else {
-            return const Text("");
-          }
-        }),
+    centerTitle: true,
+    title: Text(
+      "Home",
+      style: TextStyle(
+          fontSize: Dimensions.fontSizeLarge,
+          color: Colors.black,
+          fontWeight: FontWeight.bold),
+      overflow: TextOverflow.ellipsis,
+    ),
     titleSpacing: 0,
     leading: InkWell(
-        onTap: () {
-          Navigator.of(context).pushNamed('/location');
-        },
-        child: const Icon(Icons.location_on_rounded)),
+      onTap: () {
+        Navigator.of(context).pushNamed('/location');
+      },
+      child: const Icon(Icons.location_on_rounded),
+    ),
     actions: [
       InkWell(
         onTap: () {
@@ -127,8 +142,9 @@ Widget locationAppBar(BuildContext context) {
 
 Widget searchBar() {
   return SliverAppBar(
+    automaticallyImplyLeading: false,
     backgroundColor: Colors.white,
-    toolbarHeight: Dimensions.PADDING_SIZE_DEFAULT + kToolbarHeight,
+    toolbarHeight: kToolbarHeight,
     pinned: true,
     flexibleSpace: FlexibleSpaceBar(
       background: Padding(

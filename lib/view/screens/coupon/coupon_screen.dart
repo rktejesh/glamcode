@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/coupons.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 
+import '../../../blocs/cart_data/cart_data_bloc.dart';
 import '../../base/loading_screen.dart';
 
 class CouponScreen extends StatefulWidget {
@@ -36,24 +39,37 @@ class _CouponScreenState extends State<CouponScreen> {
               Coupons couponData = const Coupons();
               if (snapshot.hasData) {
                 couponData = snapshot.data!;
+                List<CouponData> couponsList = couponData.couponData ?? [];
+                return BlocBuilder<CartDataBloc, CartDataState>(
+                  builder: (context, state) {
+                    if(state is CartDataLoading) {
+                      return const LoadingScreen();
+                    } else if (state is CartDataLoaded) {
+                      return ListView.builder(
+                          itemCount: couponsList.length,
+                          itemBuilder: (context, index) {
+                            bool isApplied = state.cartData.couponId == couponsList[index].id;
+                            return couponsTile(couponsList[index], isApplied, context);
+                          });
+                    } else {
+                      return const CustomError();
+                    }
+                  },
+                );
+              } else {
+                return const CustomError();
               }
-              List<CouponData> couponsList = couponData.couponData ?? [];
-              return ListView.builder(
-                  itemCount: couponsList.length,
-                  itemBuilder: (context, index) {
-                    return couponsTile(couponsList[index]);
-                  });
             } else {
-              ///TODO: write error page
-              return Container();
+              return const CustomError();
             }
           },
         ));
   }
 }
 
-Widget couponsTile(CouponData couponData) {
-  return Padding(
+Widget couponsTile(CouponData couponData, bool isApplied, BuildContext context) {
+  return Container(
+    color: Colors.white,
     padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,8 +93,17 @@ Widget couponsTile(CouponData couponData) {
               horizontal: Dimensions.PADDING_SIZE_EXTRA_EXTRA_LARGE,
               vertical: Dimensions.PADDING_SIZE_SMALL),
           child: TextButton(
-            onPressed: () {},
-            child: Text(
+            style: isApplied ? ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.grey)
+            ): const ButtonStyle(),
+            onPressed: isApplied ? null : () {
+              context.read<CartDataBloc>()
+                  .add(CartCouponUpdate(couponData));
+            },
+            child: isApplied ? Text(
+              "Applied ${couponData.title.toString()}",
+              style: TextStyle(fontSize: Dimensions.fontSizeLarge, color: Colors.white),
+            ) : Text(
               "Apply ${couponData.title.toString()}",
               style: TextStyle(fontSize: Dimensions.fontSizeLarge),
             ),

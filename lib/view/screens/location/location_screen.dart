@@ -4,6 +4,7 @@ import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/auth.dart';
 import 'package:glamcode/data/model/location_model.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 
 class SelectLocationScreen extends StatefulWidget {
   const SelectLocationScreen({Key? key}) : super(key: key);
@@ -24,10 +25,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
         title: const Text(
           "CHOOSE LOCATION",
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -53,7 +52,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
             future: location,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const CircularProgressIndicator(color: Color(0xFFA854FC),);
               } else if (snapshot.connectionState == ConnectionState.done) {
                 List<Loction> locationData;
                 if (snapshot.hasData && snapshot.data!.status == "success") {
@@ -115,12 +114,10 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     ),
                   );
                 } else {
-                  ///TODO: error
-                  return Container();
+                  return const CustomError();
                 }
               } else {
-                ///TODO: error
-                return Container();
+                return const CustomError();
               }
             },
           )

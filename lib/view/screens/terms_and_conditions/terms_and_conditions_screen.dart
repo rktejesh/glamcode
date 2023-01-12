@@ -3,6 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/terms.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/base/loading_screen.dart';
 
 class TermsConditionsScreen extends StatefulWidget {
@@ -27,8 +28,6 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
       appBar: AppBar(
         title: const Text("Terms and Conditions"),
         automaticallyImplyLeading: true,
-        backgroundColor: Colors.black,
-        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: FutureBuilder<TermsModel?>(
         future: _future,
@@ -39,16 +38,18 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             TermsModel termsModel = TermsModel();
             if (snapshot.hasData) {
               termsModel = snapshot.data!;
-            }
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                  child: HtmlWidget(termsModel.pageData.toString()),
+              return SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                    child: HtmlWidget(termsModel.pageData.toString()),
+                  ),
                 ),
-              ),
-            );
+              );
+            } else {
+              return const CustomError();
+            }
           } else {
             return Container();
           }

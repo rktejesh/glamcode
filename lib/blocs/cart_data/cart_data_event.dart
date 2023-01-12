@@ -14,3 +14,21 @@ class CartDataUpdate extends CartDataEvent {
   @override
   List<Object> get props => [];
 }
+
+class CartBookingSlotUpdate extends CartDataEvent {
+  const  CartBookingSlotUpdate(this.item);
+
+  final String item;
+
+  @override
+  List<Object> get props => [];
+}
+
+class CartCouponUpdate extends CartDataEvent {
+  const  CartCouponUpdate(this.item);
+
+  final CouponData item;
+
+  @override
+  List<Object> get props => [];
+}

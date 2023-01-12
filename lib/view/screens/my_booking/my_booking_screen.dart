@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/bookings.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/screens/my_booking/widget/booking_tile.dart';
 
 import '../../base/loading_screen.dart';
@@ -12,8 +13,7 @@ class MyBookingScreen extends StatefulWidget {
   State<MyBookingScreen> createState() => _MyBookingScreenState();
 }
 
-class _MyBookingScreenState extends State<MyBookingScreen>
-    with AutomaticKeepAliveClientMixin {
+class _MyBookingScreenState extends State<MyBookingScreen> {
   late Future<BookingsModel?> _future;
 
   @override
@@ -24,7 +24,6 @@ class _MyBookingScreenState extends State<MyBookingScreen>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return FutureBuilder<BookingsModel?>(
       future: _future,
       builder: (context, snapshot) {
@@ -34,24 +33,29 @@ class _MyBookingScreenState extends State<MyBookingScreen>
           BookingsModel bookingsModelData = BookingsModel();
           if (snapshot.hasData) {
             bookingsModelData = snapshot.data!;
+            List<OngoingBookingsArr> ongoingBookingsArrList =
+                bookingsModelData.ongoingBookingsArr ?? [];
+            return RefreshIndicator(
+              onRefresh: () async {
+                setState(() {
+                  _future = DioClient.instance.getBookings();
+                });
+              },
+              child: ListView.builder(
+                  itemCount: ongoingBookingsArrList.length,
+                  itemBuilder: (context, index) {
+                    return BookingTile(
+                      ongoingBookingsArr: ongoingBookingsArrList[index],
+                    );
+                  }),
+            );
+          } else {
+            return const CustomError();
           }
-          List<OngoingBookingsArr> ongoingBookingsArrList =
-              bookingsModelData.ongoingBookingsArr ?? [];
-          return ListView.builder(
-              itemCount: ongoingBookingsArrList.length,
-              itemBuilder: (context, index) {
-                return BookingTile(
-                  ongoingBookingsArr: ongoingBookingsArrList[index],
-                );
-              });
         } else {
-          ///TODO: write error page
-          return Container();
+          return const CustomError();
         }
       },
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

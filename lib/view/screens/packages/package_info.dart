@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glamcode/data/model/packages_model/service.dart';
 import 'package:glamcode/util/convertHtmlToString.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/bottomServiceBar.dart';
 import 'package:glamcode/view/base/custom_divider.dart';
 import 'package:glamcode/view/base/golden_text.dart';
 
@@ -16,20 +17,23 @@ class PackageInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         title: const Text(
           "Package Details",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            Image.network(
-              servicePackage.serviceImageUrl ?? "",
-              width: double.infinity,
-              fit: BoxFit.cover,
+            Hero(
+              tag: servicePackage.slug ?? "",
+              child: Image.network(
+                servicePackage.serviceImageUrl ?? "",
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
@@ -144,7 +148,7 @@ class PackageInfo extends StatelessWidget {
                       child: Text(
                         "Benefits",
                         style:
-                            TextStyle(fontSize: Dimensions.fontSizeExtraLarge),
+                            TextStyle(fontSize: Dimensions.fontSizeExtraLarge, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Wrap(
@@ -166,6 +170,7 @@ class PackageInfo extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomServiceBar(),
     );
   }
 }

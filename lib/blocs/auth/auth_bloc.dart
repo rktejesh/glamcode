@@ -28,5 +28,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(ErrorAuthenticationState());
       }
     });
+    on<UserUpdated>((event, emit) async {
+      try {
+        await userRepository.updateCurrentUser(event.item);
+        emit(AuthenticatedState(user: event.item));
+      } catch (e) {
+        print(e);
+      }
+    });
   }
 }

@@ -9,6 +9,7 @@ import 'cart_counter.dart';
 
 class PackageTile extends StatelessWidget {
   final ServicePackage servicePackage;
+
   const PackageTile({Key? key, required this.servicePackage}) : super(key: key);
 
   @override
@@ -32,7 +33,7 @@ class PackageTile extends StatelessWidget {
                     flex: 4,
                     child: Padding(
                       padding:
-                          const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                          const EdgeInsets.fromLTRB(Dimensions.PADDING_SIZE_DEFAULT, Dimensions.PADDING_SIZE_DEFAULT, 0, Dimensions.PADDING_SIZE_DEFAULT),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -45,7 +46,9 @@ class PackageTile extends StatelessWidget {
                               servicePackage.name ?? "",
                               style: TextStyle(
                                   fontSize: Dimensions.fontSizeLarge,
-                                  fontWeight: FontWeight.w400),
+                                  fontWeight: FontWeight.bold,
+                                  overflow: TextOverflow.fade
+                              ),
                             ),
                           ),
                           Padding(
@@ -58,22 +61,20 @@ class PackageTile extends StatelessWidget {
                                     text:
                                         "₹${servicePackage.discountedPrice}   ",
                                     style: TextStyle(
-                                        fontSize: Dimensions.fontSizeSmall,
-                                        color: Colors.black),
+                                        fontSize: Dimensions.fontSizeDefault,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        overflow: TextOverflow.fade
+                                    ),
                                     children: [
-                                      WidgetSpan(
-                                        child: Transform.translate(
-                                          offset: const Offset(0.0, -4.0),
-                                          child: Text(
-                                            "₹${servicePackage.price}",
-                                            style: TextStyle(
-                                              fontSize:
-                                                  Dimensions.fontSizeExtraSmall,
-                                              color: Colors.grey,
-                                              decoration:
-                                                  TextDecoration.lineThrough,
-                                            ),
-                                          ),
+                                      TextSpan(
+                                        text: "₹${servicePackage.price}",
+                                        style: TextStyle(
+                                          fontSize: Dimensions.fontSizeSmall,
+                                          color: Colors.grey,
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                            overflow: TextOverflow.fade
                                         ),
                                       ),
                                     ],
@@ -96,21 +97,51 @@ class PackageTile extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.access_time_rounded,
+                                  color: Colors.grey,
                                   size: Dimensions.fontSizeSmall,
                                 ),
-                                Text(
-                                  "  ${servicePackage.time} Minutes",
+                                RichText(
+                                    text: TextSpan(
+                                  text: " ${servicePackage.time} Minutes",
                                   style: TextStyle(
-                                      fontSize: Dimensions.fontSizeSmall),
-                                )
+                                    color: Colors.grey,
+                                    fontSize: Dimensions.fontSizeSmall,
+                                      overflow: TextOverflow.fade
+                                  ),
+                                ))
                               ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(
+                                Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: convertHtmlToString(
+                                        servicePackage.description ?? "")
+                                    .map(
+                                      (e) => Padding(
+                                        padding: const EdgeInsets.all(
+                                          Dimensions
+                                              .PADDING_SIZE_EXTRA_EXTRA_SMALL,
+                                        ),
+                                        child: Text(
+                                          "\u2022 $e",
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
                             ),
                           ),
                           OutlinedButton(
                             style: ButtonStyle(
-                                side: MaterialStateProperty.all(
-                                    const BorderSide(color: Colors.black)),
-                                splashFactory: InkRipple.splashFactory),
+                                splashFactory: InkRipple.splashFactory,
+                                backgroundColor: MaterialStateProperty.all(
+                                  const Color(0xFF882EDF),
+                                )),
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => PackageInfo(
@@ -120,7 +151,7 @@ class PackageTile extends StatelessWidget {
                             child: Text(
                               "View Details",
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   fontSize: Dimensions.fontSizeLarge),
                             ),
                           )
@@ -139,8 +170,11 @@ class PackageTile extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
                             clipBehavior: Clip.hardEdge,
-                            child: Image.network(
-                                servicePackage.serviceImageUrl ?? ""),
+                            child: Hero(
+                              tag: servicePackage.slug ?? "",
+                              child: Image.network(
+                                  servicePackage.serviceImageUrl ?? ""),
+                            ),
                           ),
                         ),
                         CartCounter(
@@ -150,28 +184,6 @@ class PackageTile extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: Dimensions.PADDING_SIZE_DEFAULT,
-                    right: Dimensions.PADDING_SIZE_DEFAULT,
-                    bottom: Dimensions.PADDING_SIZE_DEFAULT),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:
-                        convertHtmlToString(servicePackage.description ?? "")
-                            .map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.all(
-                                    Dimensions.PADDING_SIZE_EXTRA_EXTRA_SMALL),
-                                child: Text("\u2022 $e"),
-                              ),
-                            )
-                            .toList(),
-                  ),
-                ),
               ),
             ],
           ),

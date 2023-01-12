@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glamcode/blocs/auth/auth_bloc.dart';
@@ -22,8 +25,49 @@ class _OTPScreenState extends State<OTPScreen> {
       print(widget.phoneNumber);
       authBloc.userRepository
           .verifyOtp(otp ?? "", widget.phoneNumber)
-          .then((value) => authBloc.add(AppLoaded()));
+          .then((value) async {
+            if(value) {
+              authBloc.add(AppLoaded());
+              if(await authBloc.userRepository.isSignedIn()) {
+                Navigator.of(context).pop();
+        }
+            }
+          });
     }
+  }
+
+  @override
+  void initState() {
+    startTimer();
+    super.initState();
+  }
+
+  late Timer _timer;
+  late int start;
+
+  void startTimer() {
+    start = 120;
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (start == 0) {
+          setState(() {
+            timer.cancel();
+          });
+        } else {
+          setState(() {
+            start--;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -119,6 +163,36 @@ class _OTPScreenState extends State<OTPScreen> {
                           ),
                         ),
                       ),
+                      RichText(
+                        text: TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: "$start sec  ",
+                                style: const TextStyle(color: Colors.black54)),
+                            TextSpan(
+                              text: 'Resend',
+                              style: TextStyle(
+                                  color: start == 0
+                                      ? Colors.blue
+                                      : Colors.black87),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  print(widget.phoneNumber);
+                                  setState(() {
+                                    startTimer();
+                                  });
+                                  start == 0
+                                      ? context
+                                          .read<AuthBloc>()
+                                          .userRepository
+                                          .sendOtp(widget.phoneNumber)
+                                      : null;
+                                  print('Resend');
+                                },
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),

@@ -1,27 +1,38 @@
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:http/http.dart' as http;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:glamcode/blocs/addon/addon_bloc.dart';
 import 'package:glamcode/blocs/cart/cart_bloc.dart';
 import 'package:glamcode/blocs/cart_data/cart_data_bloc.dart';
 import 'package:glamcode/data/repository/cart_data_repository.dart';
 import 'package:glamcode/data/repository/shopping_repository.dart';
+import 'package:glamcode/splash_screen.dart';
 import 'package:glamcode/theme/light_theme.dart';
 import 'package:glamcode/util/app_constants.dart';
 import 'package:glamcode/view/screens/about/about.dart';
+import 'package:glamcode/view/screens/addons/addons_screen.dart';
 import 'package:glamcode/view/screens/address/address_screen.dart';
+import 'package:glamcode/view/screens/booking_success.dart';
 import 'package:glamcode/view/screens/dashboard/dashboard_screen.dart';
+import 'package:glamcode/view/screens/home/home_screen.dart';
 import 'package:glamcode/view/screens/location/location_screen.dart';
 import 'package:glamcode/view/screens/cart/cart_screen.dart';
+import 'package:glamcode/view/screens/payment/payment_screen.dart';
 import 'package:glamcode/view/screens/privacy_policy/privacy_policy_screen.dart';
+import 'package:glamcode/view/screens/select_booking/select_booking_screen.dart';
 import 'package:glamcode/view/screens/terms_and_conditions/terms_and_conditions_screen.dart';
 
 import 'blocs/auth/auth_bloc.dart';
 import 'data/api/api_helper.dart';
 import 'data/model/auth.dart';
 import 'data/repository/user_repository.dart';
-import 'helper/route_helper.dart';
 import 'home.dart';
+import 'main.dart';
 
 class MyApp extends StatefulWidget {
   final UserRepository userRepository;
@@ -45,11 +56,19 @@ class _MyAppState extends State<MyApp> {
   late AuthBloc authBloc;
   late CartBloc cartBloc;
   late CartDataBloc cartDataBloc;
+  late AddonBloc addonBloc;
   UserRepository get userRepository => widget.userRepository;
   ShoppingRepository get shoppingRepository => widget.shoppingRepository;
   CartDataRepository get cartDataRepository => widget.cartDataRepository;
   Auth get auth => widget.auth;
   DioClient get dioClient => widget.dioClient;
+
+  late String token;
+  getToken() async {
+    token = await FirebaseMessaging.instance.getToken() ?? "";
+    print("-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=->$token");
+  }
+
   @override
   void initState() {
     authBloc = AuthBloc(userRepository: userRepository, dioClient: dioClient);
@@ -58,7 +77,70 @@ class _MyAppState extends State<MyApp> {
     cartDataBloc.add(CartDataStarted());
     cartBloc = CartBloc(shoppingRepository, cartDataBloc);
     cartBloc.add(CartStarted());
+    addonBloc = AddonBloc(shoppingRepository, cartDataBloc);
+    addonBloc.add(AddonStarted());
     super.initState();
+
+    var initializationSettingsAndroid =
+        const AndroidInitializationSettings('ic_launcher');
+    var initialzationSettingsAndroid =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings =
+        InitializationSettings(android: initialzationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+
+        final http.Response response = await http.get(Uri.parse(android.imageUrl ?? ""));
+        BigPictureStyleInformation bigPictureStyleInformation = BigPictureStyleInformation(
+            ByteArrayAndroidBitmap.fromBase64String(base64Encode(response.bodyBytes)));
+
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channelDescription: channel.description,
+                color: Colors.blue,
+                icon: "@mipmap/ic_launcher",
+                importance: Importance.high,
+                priority: Priority.high,
+                styleInformation: bigPictureStyleInformation
+              ),
+            ),
+          payload: android.imageUrl
+        );
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        showDialog(
+            // context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: Text(notification.title ?? ""),
+                content: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [Text(notification.body ?? "")],
+                  ),
+                ),
+              );
+            },
+            context: context);
+      }
+    });
+
+    getToken();
   }
 
   @override
@@ -73,6 +155,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => cartDataBloc,
+        ),
+        BlocProvider(
+          create: (context) => addonBloc,
         ),
       ],
       child: MaterialApp(
@@ -89,18 +174,23 @@ class _MyAppState extends State<MyApp> {
           : themeController.lightColor == null
               ? light()
               : light(color: themeController.lightColor ?? Colors.white),*/
-        initialRoute: RouteHelper.getInitialRoute(),
         routes: {
-          '/': (context) => Home(
+          '/': (context) => SplashScreen(
                 authBloc: authBloc,
               ),
+          "/index": (context) => Home(authBloc: authBloc),
           "/dashboard": (context) => const DashboardScreen(pageIndex: 0),
+          "/home": (context) => const HomeScreen(),
           "/location": (context) => const SelectLocationScreen(),
           "/cart": (context) => const CartScreen(),
           "/terms": (context) => const TermsConditionsScreen(),
           "/about": (context) => const AboutScreen(),
           "/privacy": (context) => const PrivacyPolicyScreen(),
           "/address": (context) => const AddressDetailsScreen(),
+          "/addons": (context) => const AddonsScreen(),
+          "/booking-data": (context) => const SelectBookingDateScreen(),
+          "/payment": (context) => const PaymentScreen(),
+          "/payment-success": (context) => const BookingSuccessScreen()
         },
       ),
     );

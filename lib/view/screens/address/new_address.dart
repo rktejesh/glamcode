@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/address_details_model.dart';
@@ -107,15 +105,30 @@ class _NewAddressScreenState extends State<NewAddressScreen>
                             if (_newAddressFormKey.currentState!.validate()) {
                               DioClient.instance
                                   .addAddress(address)
-                                  .then((value) {
-                                if (value) {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const CartScreen()),
-                                      ModalRoute.withName('/'));
-                                  setState(() {
-                                    loading = false;
+                                  .then((value) async {
+                                if (value != null && value.addressId != null) {
+                                  await DioClient.instance
+                                      .setPrimaryAddress(value).then((value) {
+                                        if(value) {
+                                          Navigator.of(context).pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const CartScreen()),
+                                              ModalRoute.withName('/index'));
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Error adding address',
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                    setState(() {
+                                      loading = false;
+                                    });
                                   });
                                 } else {
                                   setState(() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/main_categories_model.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/screens/packages/packages_screen.dart';
 
 class ServicesGrid extends StatefulWidget {
@@ -20,7 +21,6 @@ class _ServicesGridState extends State<ServicesGrid>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     mainCategoriesModel = DioClient().getMainCategories();
   }
@@ -32,7 +32,7 @@ class _ServicesGridState extends State<ServicesGrid>
         future: mainCategoriesModel,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator(color: Color(0xFFA854FC),));
           } else if (snapshot.connectionState == ConnectionState.done) {
             List<Maincat> mainCatModelData;
             if (snapshot.hasData && snapshot.data!.status == "success") {
@@ -54,12 +54,10 @@ class _ServicesGridState extends State<ServicesGrid>
                 },
               );
             } else {
-              ///TODO: error
-              return Container();
+              return const CustomError();
             }
           } else {
-            ///TODO: error
-            return Container();
+            return const CustomError();
           }
         });
   }
@@ -73,7 +71,7 @@ Widget imageGridCard(
           context,
           MaterialPageRoute(
               builder: (context) => PackagesScreen(mainCategoryId: id)),
-          ModalRoute.withName('/'));
+          ModalRoute.withName('/index'));
     },
     child: SizedBox(
       height: 50,
@@ -84,7 +82,7 @@ Widget imageGridCard(
           CircleAvatar(
             radius: 30,
             // backgroundImage: NetworkImage(imageUrl),
-            backgroundColor: Colors.grey,
+            backgroundColor: Colors.white,
             child: ClipOval(
               child: Container(
                 decoration: BoxDecoration(

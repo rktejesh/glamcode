@@ -8,7 +8,7 @@ class CustomDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: Dimensions.PADDING_SIZE_DEFAULT,
-      color: const Color(0xFFEEEEEE),
+      color: const Color(0xFFFFF1F1),
     );
   }
 }

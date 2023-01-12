@@ -12,12 +12,8 @@ Widget customTextField(
       decoration: InputDecoration(
           focusColor: Colors.black,
           floatingLabelStyle: const TextStyle(color: Colors.black),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black)),
           labelText: title,
-          border: const OutlineInputBorder(),
-          enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black))),
+          border: InputBorder.none,),
       keyboardType: textInputType ?? TextInputType.text,
       controller: textEditingController,
       validator: fn ?? defaultValidator,
@@ -25,5 +21,11 @@ Widget customTextField(
   );
 }
 
-String? defaultValidator(value) =>
-    value.isEmpty ? 'Field cannot be blank' : null;
+String? defaultValidator(String? value) {
+  if(value != null) {
+    if(value.trim().isEmpty) {
+      return 'Field cannot be blank';
+    }
+  }
+  return null;
+}

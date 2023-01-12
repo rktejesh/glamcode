@@ -3,6 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:glamcode/data/api/api_helper.dart';
 import 'package:glamcode/data/model/privacy.dart';
 import 'package:glamcode/util/dimensions.dart';
+import 'package:glamcode/view/base/error_screen.dart';
 import 'package:glamcode/view/base/loading_screen.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
@@ -27,8 +28,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       appBar: AppBar(
         title: const Text("Privacy Policy"),
         automaticallyImplyLeading: true,
-        backgroundColor: Colors.black,
-        titleTextStyle: const TextStyle(color: Colors.white),
       ),
       body: FutureBuilder<Privacy?>(
         future: _future,
@@ -39,16 +38,18 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
             Privacy privacy = Privacy();
             if (snapshot.hasData) {
               privacy = snapshot.data!;
-            }
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-                  child: HtmlWidget(privacy.pageData.toString()),
+              return SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
+                    child: HtmlWidget(privacy.pageData.toString()),
+                  ),
                 ),
-              ),
-            );
+              );
+            } else {
+              return const CustomError();
+            }
           } else {
             return Container();
           }

@@ -37,17 +37,20 @@ Widget customerTestimonialCard(Reviews item) {
         const EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_DEFAULT),
     child: Container(
       padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_DEFAULT),
-      decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: const BorderRadius.all(Radius.circular(10))),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage:
-                cachedNetworkImageProvider(item.reviewsImageUrl ?? ""),
+          Padding(
+            padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL + Dimensions.PADDING_SIZE_EXTRA_SMALL),
+            child: CircleAvatar(
+              radius: 30,
+              backgroundImage:
+                  cachedNetworkImageProvider(item.reviewsImageUrl ?? ""),
+            ),
           ),
           Expanded(
             child: Padding(

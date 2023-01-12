@@ -1,3 +1,4 @@
+import 'package:glamcode/data/model/coupons.dart';
 import 'package:glamcode/data/repository/shopping_repository.dart';
 
 import '../api/api_helper.dart';
@@ -9,10 +10,12 @@ class CartDataRepository {
   Auth auth = Auth.instance;
   DioClient dioClient = DioClient.instance;
   ShoppingRepository shoppingRepository;
+  CouponRepository couponRepository;
   CartDataRepository({
     required this.auth,
     required this.dioClient,
     required this.shoppingRepository,
+    required this.couponRepository
   });
 
   Future<CartData> loadItems() async {
@@ -22,6 +25,7 @@ class CartDataRepository {
     num? discount;
     num? couponDiscount;
     num? discountPercent;
+    num? mincheck;
     String? taxName;
     num? taxPercent;
     num? extraFees;
@@ -30,7 +34,7 @@ class CartDataRepository {
     try {
       await Auth.instance.currentUser.then((value) => userId = value.id);
       originalAmount = shoppingRepository.getTotalPrice();
-      await CouponRepository.instance.currentCoupon.then((value) {
+      couponRepository.currentCoupon.then((value) {
         couponId = value.id;
         if (value.percent != null) {
           discount = (originalAmount ?? 0 * (value.percent ?? 0)) / 100;
@@ -50,6 +54,9 @@ class CartDataRepository {
           if (value.extraFees != null && value.extraFees!.isNotEmpty) {
             extraFees = value.extraFees![0].amount;
           }
+          if(value.mincheck!=null && value.mincheck!.isNotEmpty) {
+            mincheck = num.parse(value.mincheck![0].amount ?? "0");
+          }
         }
       });
 
@@ -64,6 +71,7 @@ class CartDataRepository {
           couponDiscount: couponDiscount,
           discountPercent: discountPercent,
           taxName: taxName,
+          mincheck: mincheck,
           taxPercent: taxPercent,
           extraFees: extraFees,
           amountToPay: amountToPay);
@@ -87,6 +95,25 @@ class CartDataRepository {
           100;
       return cartData.copyWith(
           originalAmount: originalAmount, amountToPay: amountToPay);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  CartData updateBookingSlot(CartData cartData, String bookingSlot) {
+    try {
+      return cartData.copyWith(bookingDateTime: bookingSlot);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  CartData updateCoupon(CartData cartData, CouponData couponData) {
+    try {
+      couponRepository.updateCurrentCouponInstance(couponData);
+      return cartData.copyWith(couponId: couponData.id, couponDiscount: couponData.amount, discountPercent: couponData.percent);
     } catch (e) {
       print(e);
       rethrow;

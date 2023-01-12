@@ -12,6 +12,7 @@ class ImageSlider extends StatelessWidget {
     for (final SliderImages item in images) {
       imageSliderTileList.add(imageSliderTile(item));
     }
+    imageSliderTileList.reversed;
     return imageSliderTileList;
   }
 

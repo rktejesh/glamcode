@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glamcode/data/model/address_details_model.dart';
 import 'package:glamcode/view/base/custom_text_field.dart';
+import 'package:glamcode/view/base/loading_screen.dart';
 import 'package:glamcode/view/screens/address/select_address.dart';
 
 import '../../../data/api/api_helper.dart';
@@ -47,7 +48,7 @@ class _EditAddressScreenState extends State<EditAddressScreen>
       appBar: AppBar(
         title: const Text("EDIT ADDRESS"),
       ),
-      body: Form(
+      body: loading ? const LoadingScreen() : Form(
         key: _editAddressFormKey,
         child: SingleChildScrollView(
           child: Padding(
@@ -71,12 +72,39 @@ class _EditAddressScreenState extends State<EditAddressScreen>
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            settings:
-                                const RouteSettings(name: "/edit-address"),
-                            builder: (context) => SelectAddressScreen(
-                                edit: true,
-                                addressDetails: widget.addressDetails)));
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text("Disclosure"),
+                            content: const Text("Glam Code collects location data to enable you to select addresses even when the app is always in use."),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(const Color(0xFFA854FC))
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("Deny"),
+                              ),
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(const Color(0xFFA854FC))
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      settings:
+                                      const RouteSettings(name: "/edit-address"),
+                                      builder: (context) => SelectAddressScreen(
+                                          edit: true,
+                                          addressDetails: widget.addressDetails)));
+                                },
+                                child: const Text("Approve"),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                       child: const Padding(
                         padding:
@@ -107,12 +135,27 @@ class _EditAddressScreenState extends State<EditAddressScreen>
                           mobileNumber: widget.addressDetails.mobileNumber,
                           callingCode: widget.addressDetails.callingCode);
                       if (_editAddressFormKey.currentState!.validate()) {
-                        DioClient.instance.editAddress(address).then((value) {
-                          if (value) {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => const CartScreen()),
-                                ModalRoute.withName('/'));
+                        DioClient.instance.editAddress(address).then((value) async {
+                          if (value != null && value.addressId != null) {
+                            await DioClient.instance
+                                .setPrimaryAddress(value).then((value){
+                              if(value) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (context) => const CartScreen()),
+                                    ModalRoute.withName('/index'));
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Error adding address',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            });
                             setState(() {
                               loading = false;
                             });
